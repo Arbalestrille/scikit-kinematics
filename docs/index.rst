@@ -1,10 +1,11 @@
 scikit-kinematics - Documentation
 =================================
 
-*scikit-kinematics* is a library for scientific data analysis, with a focus on 3d
-kinematics.
+*scikit-kinematics* is a library for scientific data analysis, with a focus
+on 3d kinematics.
 
-It is hosted under https://github.com/thomas-haslwanter/scikit-kinematics, and contains the following modules:
+It is hosted under https://github.com/thomas-haslwanter/scikit-kinematics,
+and contains the following modules:
 
 *imus*  Analysis routines for IMU-recordings
     - calculation of orientation from velocity, recorded with IMUs or
@@ -16,9 +17,11 @@ It is hosted under https://github.com/thomas-haslwanter/scikit-kinematics, and c
       - Mahony's algorithm
 
     - calculation of position and orientation from IMU-signals
-    - The sub-directory *sensors* contains utility to import in data from *xio*, *XSens*, and *yei* system
+    - The sub-directory *sensors* contains utility to import in data from
+      *xio*, *XSens*, and *yei* system
 
-*markers*  Analysis routines for 3D movements from marker-based video recordings
+*markers* Analysis routines for 3D movements from marker-based video
+ recordings
     - a function that takes recordings from video-systems (e.g. Optotrak)
       and calculates position and orientation
     - calculation of joint movements from marker recordings
@@ -84,10 +87,10 @@ Upgrading
 
 For upgrading to the latest version, you have to type
 
->>> pip install --upgrade --no-deps scikit-kinematics 
+>>> pip install --upgrade --no-deps scikit-kinematics
 
 **Warning**: Do **not** use *pip install scikit-kinematics -U*, since that
-command also upgrades dependencies such as numpy. This can break e.g.
+command also upgrades dependencies such as numpy.  This can break e.g.
 WinPython, since the numpy-version including MKL may be replaced by one
 without MKL.
 
@@ -134,4 +137,3 @@ Indices and tables
     | *email:*      thomas.haslwanter@fh-linz.at
     | *Copyright (c):*      2019, Thomas Haslwanter. All rights reserved.
     | *Licence:*    This work is licensed under the `BSD 2-Clause License <http://opensource.org/licenses/BSD-2-Clause>`_
-

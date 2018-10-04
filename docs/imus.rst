@@ -25,15 +25,14 @@ demonstrated in the example below. You have to provide at least the
 file-name of the file containing the sensor data. Optionally, you can also
 provide:
 
-* R_init ... initial orientation [default = np.eye(3)]
-* pos_init ... initial position [default = np.ones(3)]
-* q_type ... method to calculate orientation. The options are:
-  
-    - "analytical" [default] ... analytical solution, using only acc and omega
-    - "kalman" ... quaternion Kalman filter, using acc, omega, and mag
-    - "madgwick" ... Madgwick algorithm, using acc, omega, and mag
-    - "mahony" ... Mahony algorithm, using, acc and omega, and mag
-    - "None" ... If you want to only read in the sensor data
+* ``R_init`` initial orientation [default = np.eye(3)]
+* ``pos_init`` initial position [default = np.ones(3)]
+* ``q_type`` method to calculate orientation. The options are:
+    - ``analytical`` [default] analytical solution, using only acc and omega
+    - ``kalman`` quaternion Kalman filter, using acc, omega, and mag
+    - ``madgwick`` Madgwick algorithm, using acc, omega, and mag
+    - ``mahony`` Mahony algorithm, using, acc and omega, and mag
+    - ``None`` If you want to only read in the sensor data
 
 Data are read in, and by default the orientation is automatically calculated
 based on the parameter "q_type" and using the function _calc_orientation.
@@ -50,8 +49,10 @@ Base-Class & Methods
 Classes and Functions for Sensor-Integration
 --------------------------------------------
 
-* :func:`imus.analytical` ... Calculate orientation and position analytically from angular velocity and linear acceleration 
-* :func:`imus.kalman` ... Calculate orientation from IMU-data using an Extended Kalman Filter
+* :func:`imus.analytical` Calculate orientation and position analytically
+  from angular velocity and linear acceleration
+* :func:`imus.kalman` Calculate orientation from IMU-data using an Extended
+  Kalman Filter
 
 .. autosummary::
     imus.Mahony
@@ -69,9 +70,10 @@ Sub-classing IMU-Base for your own sensor type
 If you have your own data format, you have to implement the corresponding
 "get_data" method. You can base it on:
 
-* "xsens.py" ... if all your data are in one file
-* "polulu.py" ... if you have to manually enter data not stored by your program
-* "xio.py" ... if your data are stored in multiple files
+* ``xsens.py`` if all your data are in one file.
+* ``polulu.py`` if you have to manually enter data not stored by your
+  program.
+* ``xio.py`` if your data are stored in multiple files.
 
 Existing Sensor Implementations
 -------------------------------
@@ -100,4 +102,3 @@ Polulu
 ^^^^^^
 .. automodule:: sensors.polulu
     :members:
-
