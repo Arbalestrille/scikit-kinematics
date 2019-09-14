@@ -62,7 +62,6 @@ def change_orientation(rate, duration, q_start=[0, 0, 0],
     """
 
     gauss, t, dt = make_gauss(rate, duration)
-    num = len(t)
     rad = np.deg2rad(deg)
 
     # Rotation about a single axis, with a gaussian velocity profile

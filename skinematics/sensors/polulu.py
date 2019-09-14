@@ -90,11 +90,14 @@ class Polulu(IMU_Base):
 
 
 if __name__ == "__main__":
-    inFile = r"..\tests\data\data_polulu.txt"
-    in_data = {"rate": 125}
-    my_sensor = Polulu(in_file=inFile, in_data=in_data)
-
+    import os.path as osp
     import matplotlib.pyplot as plt
+
+    here = osp.dirname(__file__)
+    in_file = osp.join(osp.dirname(here), "tests", "data",
+                       "data_polulu.txt")
+    in_data = {"rate": 125}
+    my_sensor = Polulu(in_file=in_file, in_data=in_data)
 
     plt.plot(my_sensor.acc)
     plt.show()

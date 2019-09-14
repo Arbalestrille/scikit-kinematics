@@ -139,6 +139,8 @@ class IMU_Base(metaclass=abc.ABCMeta):
           called, and the 3D position stored in the propery "pos". (Note
           that if q_type==None, then "position" is set to "False".)
 
+        Parameters
+        ----------
         in_file : string
             Location of infile / input
         q_type : string
@@ -444,7 +446,7 @@ def kalman(rate, acc, omega, mag, D=[0.4, 0.4, 0.4],
     Returns
     -------
     qOut : (N,4) ndarray
-        Unit quaternion, describing the orientation relativ to the
+        Unit quaternion, describing the orientation relative to the
         coordinate system spanned by the local magnetic field, and gravity
 
     Notes
@@ -651,7 +653,7 @@ class Madgwick:
 
 
 class Mahony:
-    """Madgwick's implementation of Mayhony's AHRS algorithm
+    """Madgwick's implementation of Mahony's AHRS algorithm
 
         Parameters
         ----------

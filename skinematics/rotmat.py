@@ -63,7 +63,6 @@ def stm_s(axis="x", angle="0", transl="0,0,0"):
             "0,0,0" would correspond to no translation, and
             "x,y,z" to an arbitrary translation.
 
-
     Returns
     -------
         STM_symbolic : corresponding symbolic spatial transformation matrix
@@ -97,7 +96,7 @@ def stm_s(axis="x", angle="0", transl="0,0,0"):
 
 
 def R(axis="x", angle=90):
-    """Rotation matrix for rotation about a cardinal axis.
+    """Rotation matrix for rotation about a cardinal axis
 
     The argument is entered in degrees.
 
@@ -133,6 +132,7 @@ def R(axis="x", angle=90):
     array([[ 0.70710678, -0.70710678,  0.        ],
            [ 0.70710678,  0.70710678,  0.        ],
            [ 0.        ,  0.        ,  1.        ]])
+
     """
 
     axis = _check_axis(axis)
@@ -173,6 +173,7 @@ def _check_axis(sel_axis):
     -------
         axis : str
         Selected axis, as string
+
     """
 
     seq = "xyz"
@@ -239,8 +240,8 @@ def R_s(axis="x", angle="alpha"):
 
 
 def sequence(R, to="Euler"):
-    """This function takes a rotation matrix, and calculates the corresponding
-    angles for sequential rotations.
+    """Given a rotation matrix, calculate corresponding angles for sequential
+    rotations.
 
     R_Euler = R3(gamma) * R1(beta) * R3(alpha)
 
@@ -401,7 +402,6 @@ def dh(theta=0, d=0, r=0, alpha=0):
     r : float
         transformation along the x-axis
 
-
     Returns
     -------
     dh : ndarray(4x4)
@@ -429,16 +429,12 @@ def dh_s(theta=0, d=0, r=0, alpha=0):
     ----------
     theta : float
         rotation angle z axis [deg]
-
     d : float
         transformation along the z-axis
-
     alpha : float
         rotation angle x axis [deg]
-
     r : float
         transformation along the x-axis
-
 
     Returns
     -------

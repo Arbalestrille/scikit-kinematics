@@ -13,7 +13,7 @@ from skinematics import quat
 
 
 def normalize(v):
-    """ Normalization of a given vector (with image)
+    """Normalization of a given vector (with image)
 
     Parameters
     ----------
@@ -24,7 +24,6 @@ def normalize(v):
     -------
     v_normalized : array (N,) or (M,N)
         normalized input vector
-
 
     .. image:: ../docs/Images/vector_normalize.png
         :scale: 33%
@@ -45,8 +44,6 @@ def normalize(v):
 
     .. math::
         \\vec{n} = \\frac{\\vec{v}}{|\\vec{v}|}
-
-
 
     """
 
@@ -80,7 +77,6 @@ def angle(v1, v2):
     -------
     angle : double or array(M,)
         angle between v1 and v2
-
 
     .. image:: ../docs/Images/vector_angle.png
         :scale: 33%
@@ -134,12 +130,10 @@ def project(v1, v2, projection_type="1D"):
         - 1D ... projection onto a vector (Default)
         - 2D ... projection into the plane perpendicular to that vector
 
-
     Returns
     -------
     v_projected : array (N,) or (M,N)
         projection of v1 onto v2
-
 
     .. image:: ../docs/Images/vector_project.png
         :scale: 33%
@@ -222,7 +216,6 @@ def GramSchmidt(p0, p1, p2):
     -------
     Rmat : array (9,) or (M,9)
         flattened rotation matrix
-
 
     .. image:: ../docs/Images/GramSchmidt.jpg
         :scale: 25%
@@ -314,7 +307,8 @@ def plane_orientation(p0, p1, p2):
 
 
 def q_shortest_rotation(v1, v2):
-    """Quaternion indicating the shortest rotation from one vector into another.
+    """Quaternion indicating the shortest rotation from one vector into another
+
     You can read "qrotate" as either "quaternion rotate" or as "quick
     rotate".
 
@@ -330,7 +324,6 @@ def q_shortest_rotation(v1, v2):
     q : ndarray (3,)
         quaternion rotating v1 into v2
 
-
     .. image:: ../docs/Images/vector_q_shortest_rotation.png
         :scale: 33%
 
@@ -341,6 +334,7 @@ def q_shortest_rotation(v1, v2):
     >>> q = qrotate(v1, v2)
     >>> print(q)
     [ 0.          0.          0.38268343]
+
     """
 
     # calculate the direction
@@ -365,11 +359,10 @@ def q_shortest_rotation(v1, v2):
 
 
 def rotate_vector(vector, q):
-    """
-    Rotates a vector, according to the given quaternions.
+    """Rotate a vector according to the given quaternions
+
     Note that a single vector can be rotated into many orientations;
     or a row of vectors can all be rotated by a single quaternion.
-
 
     Parameters
     ----------
@@ -382,7 +375,6 @@ def rotate_vector(vector, q):
     -------
     rotated : array, shape (3,) or (N,3)
         rotated vector(s)
-
 
     .. image:: ../docs/Images/vector_rotate_vector.png
         :scale: 33%
@@ -423,10 +415,11 @@ def rotate_vector(vector, q):
 
 
 def target2orient(target, orient_type="quat"):
-    """ Converts a target vector into a corresponding orientation.
-    Useful for targeting devices, such as eyes, cameras, or missile trackers.
-    Based on the assumption, that in the reference orientation, the targeting
-    device points forward.
+    """Convert target vector into a corresponding orientation
+
+    Useful for targeting devices, such as eyes, cameras, or missile
+    trackers.  Based on the assumption, that in the reference orientation,
+    the targeting device points forward.
 
     Parameters
     ----------
@@ -465,6 +458,7 @@ def target2orient(target, orient_type="quat"):
 
     >>> skinematics.vector.target2orient(a, orient_type="nautical")
     [ 45.  -0.   0.]
+
     """
 
     if orient_type == "quat":

@@ -21,10 +21,12 @@ PI = np.pi
 
 
 class Quaternion():
-    """Quaternion class, with multiplication, division, and inversion
+    """Quaternion class
+
+    Includes multiplication, division, and inversion.
 
     A Quaternion can be created from vectors, rotation matrices, or from
-    Fick-angles, Helmholtz-angles, or Euler angles (in deg).  It provides
+    Fick-angles, Helmholtz-angles, or Euler angles (in deg).  It provides:
 
     * operator overloading for mult, div, and inv.
     * indexing
@@ -36,20 +38,16 @@ class Quaternion():
         Contains the data in one of the following formats:
 
             * vector: (3 x n) or (4 x n) array, containing the quaternion
-                  values
-
+              values
             * rotmat: array, shape (3,3) or (N,9) single rotation matrix,
-                  or matrix with rotation-matrix elements.
-
+              or matrix with rotation-matrix elements.
             * Fick: (3 x n) array, containing (psi, phi, theta) rotations
-                  about the (1,2,3) axes [deg] (Fick sequence)
-
+              about the (1,2,3) axes [deg] (Fick sequence)
             * Helmholtz: (3 x n) array, containing (psi, phi, theta)
-                  rotations about the (1,2,3) axes [deg] (Helmholtz
-                  sequence)
-
+              rotations about the (1,2,3) axes [deg] (Helmholtz
+              sequence)
             * Euler: (3 x n) array, containing (alpha, beta, gamma)
-                  rotations about the (3,1,3) axes [deg] (Euler sequence)
+              rotations about the (3,1,3) axes [deg] (Euler sequence)
 
     inType : string
         Specifies the type of the input and has to have one of the
@@ -72,52 +70,52 @@ class Quaternion():
     Notes
     -----
     .. math::
-          \\vec {q}_{Euler}  = \\left[{\\begin{array}{*{20}{c}}
-          {\\cos \\frac{\\alpha}{2} * \\cos \\frac{\\beta}{2} *
-           \\cos \\frac{\\gamma}{2} - \\sin \\frac{\\alpha}{2}
-           \\cos \\frac{\\beta}{2} \\sin \\frac{\\gamma}{2}} \\\\
-          {\\cos \\frac{\\alpha}{2} * \\sin \\frac{\\beta}{2} *
-           \\cos \\frac{\\gamma}{2} + \\sin \\frac{\\alpha}{2}
-            \\sin \\frac{\\beta}{2} \\sin \\frac{\\gamma}{2}} \\\\
-          {\\cos \\frac{\\alpha}{2} * \\sin \\frac{\\beta}{2} *
-           \\sin \\frac{\\gamma}{2} - \\sin \\frac{\\alpha}{2}
-           \\sin \\frac{\\beta}{2} \\cos \\frac{\\gamma}{2}} \\\\
-          {\\cos \\frac{\\alpha}{2} * \\cos \\frac{\\beta}{2} *
-           \\sin \\frac{\\gamma}{2} + \\sin \\frac{\\alpha}{2}
-           \\cos \\frac{\\beta}{2} \\cos \\frac{\\gamma}{2}}
-           \\end{array}} \\right]
+        \\vec {q}_{Euler}  = \\left[{\\begin{array}{*{20}{c}}
+        {\\cos \\frac{\\alpha}{2} * \\cos \\frac{\\beta}{2} *
+         \\cos \\frac{\\gamma}{2} - \\sin \\frac{\\alpha}{2}
+         \\cos \\frac{\\beta}{2} \\sin \\frac{\\gamma}{2}} \\\\
+        {\\cos \\frac{\\alpha}{2} * \\sin \\frac{\\beta}{2} *
+         \\cos \\frac{\\gamma}{2} + \\sin \\frac{\\alpha}{2}
+          \\sin \\frac{\\beta}{2} \\sin \\frac{\\gamma}{2}} \\\\
+        {\\cos \\frac{\\alpha}{2} * \\sin \\frac{\\beta}{2} *
+         \\sin \\frac{\\gamma}{2} - \\sin \\frac{\\alpha}{2}
+         \\sin \\frac{\\beta}{2} \\cos \\frac{\\gamma}{2}} \\\\
+        {\\cos \\frac{\\alpha}{2} * \\cos \\frac{\\beta}{2} *
+         \\sin \\frac{\\gamma}{2} + \\sin \\frac{\\alpha}{2}
+         \\cos \\frac{\\beta}{2} \\cos \\frac{\\gamma}{2}}
+         \\end{array}} \\right]
 
     .. math::
-          \\vec {q}_{Fick}  = \\left[{\\begin{array}{*{20}{c}}
-          {\\cos \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
-           \\cos \\frac{\\theta}{2} + \\sin \\frac{\\psi}{2}
-           \\sin \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
-          {\\sin \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
-           \\cos \\frac{\\theta}{2} - \\cos \\frac{\\psi}{2}
-           \\sin \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
-          {\\cos \\frac{\\psi}{2} * \\sin \\frac{\\phi}{2} *
-           \\cos \\frac{\\theta}{2} + \\sin \\frac{\\psi}{2}
-           \\cos \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
-          {\\cos \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
-           \\sin \\frac{\\theta}{2} - \\sin \\frac{\\psi}{2}
-           \\sin \\frac{\\phi}{2}\\cos \\frac{\\theta}{2}}
-           \\end{array}} \\right]
+        \\vec {q}_{Fick}  = \\left[{\\begin{array}{*{20}{c}}
+        {\\cos \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
+         \\cos \\frac{\\theta}{2} + \\sin \\frac{\\psi}{2}
+         \\sin \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
+        {\\sin \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
+         \\cos \\frac{\\theta}{2} - \\cos \\frac{\\psi}{2}
+         \\sin \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
+        {\\cos \\frac{\\psi}{2} * \\sin \\frac{\\phi}{2} *
+         \\cos \\frac{\\theta}{2} + \\sin \\frac{\\psi}{2}
+         \\cos \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
+        {\\cos \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
+         \\sin \\frac{\\theta}{2} - \\sin \\frac{\\psi}{2}
+         \\sin \\frac{\\phi}{2}\\cos \\frac{\\theta}{2}}
+         \\end{array}} \\right]
 
     .. math::
-          \\vec {q}_{Helmholtz}  = \\left[{\\begin{array}{*{20}{c}}
-          {\\cos \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
-           \\cos \\frac{\\theta}{2} - \\sin \\frac{\\psi}{2}
-           \\sin \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
-          {\\sin \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
-           \\cos \\frac{\\theta}{2} + \\cos \\frac{\\psi}{2}
-           \\sin \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
-          {\\cos \\frac{\\psi}{2} * \\sin \\frac{\\phi}{2} *
-           \\cos \\frac{\\theta}{2} + \\sin \\frac{\\psi}{2}
-           \\cos \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
-          {\\cos \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
-           \\sin \\frac{\\theta}{2} - \\sin \\frac{\\psi}{2}
-           \\sin \\frac{\\phi}{2}\\cos \\frac{\\theta}{2}}
-           \\end{array}} \\right]
+        \\vec {q}_{Helmholtz}  = \\left[{\\begin{array}{*{20}{c}}
+        {\\cos \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
+         \\cos \\frac{\\theta}{2} - \\sin \\frac{\\psi}{2}
+         \\sin \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
+        {\\sin \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
+         \\cos \\frac{\\theta}{2} + \\cos \\frac{\\psi}{2}
+         \\sin \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
+        {\\cos \\frac{\\psi}{2} * \\sin \\frac{\\phi}{2} *
+         \\cos \\frac{\\theta}{2} + \\sin \\frac{\\psi}{2}
+         \\cos \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
+        {\\cos \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
+         \\sin \\frac{\\theta}{2} - \\sin \\frac{\\psi}{2}
+         \\sin \\frac{\\phi}{2}\\cos \\frac{\\theta}{2}}
+         \\end{array}} \\right]
 
     Examples
     --------
@@ -349,6 +347,7 @@ def convert(quat, to="rotmat"):
     array([[ 0.98      , -0.19899749,  0.        ],
         [ 0.19899749,  0.98      ,  0.        ],
         [ 0.        ,  0.        ,  1.        ]])
+
     """
 
     if to == "rotmat":
@@ -426,7 +425,6 @@ def q_conj(q):
     Returns
     -------
     qconj : conjugate quaternion(s)
-
 
     Examples
     --------
@@ -599,14 +597,14 @@ def quat2deg(inQuat):
 
     >>> quat.quat2deg([cos(0.1), 0, sin(0.1), 0])
     array([  0.       ,  11.4591559,   0.       ])
+
     """
     return 2 * np.arcsin(q_vector(inQuat)) * 180 / PI
 
 
 def quat2seq(quats, seq="nautical"):
-    """
-    This function takes a quaternion, and calculates the corresponding
-    angles for sequenctial rotations.
+    """Given quaternions, compute corresponding angles for sequential
+    rotations.
 
     Parameters
     ----------
@@ -643,7 +641,6 @@ def quat2seq(quats, seq="nautical"):
     >>> skin.quat.quat2seq(quaternions, "Euler")
     array([[ 11.47834095,   0.        ,   0.        ],
            [ 90.        ,  23.07391807,  -90.        ]])
-
 
     """
 
@@ -741,8 +738,7 @@ def q_vector(inQuat):
 
 
 def q_scalar(inQuat):
-    """
-    Extract the quaternion scalar from a full quaternion.
+    """Extract the quaternion scalar from a full quaternion
 
     Parameters
     ----------
@@ -779,8 +775,9 @@ def q_scalar(inQuat):
 
 
 def unit_q(inData):
-    """ Utility function, which turns a quaternion vector into a unit quaternion.
-    If the input is already a full quaternion, the output equals the input.
+    """Turns a quaternion vector into a unit quaternion
+
+    If input is already a full quaternion, the output equals the input.
 
     Parameters
     ----------
@@ -827,8 +824,8 @@ def unit_q(inData):
 
 
 def calc_quat(omega, q0, rate, CStype):
-    """Take an angular velocity (in rad/s), and convert it into the
-    corresponding orientation quaternion.
+    """Convert angular velocity (rad/s) to corresponding orientation
+    quaternion.
 
     Parameters
     ----------
@@ -915,15 +912,14 @@ def calc_quat(omega, q0, rate, CStype):
         elif CStype == "bf":
             qm = q_mult(q2, q1)
         else:
-            print("I don't know this type of coordinate system!")
+            print("Unknown coordinate system!")
         q_pos[ii + 1, :] = qm
 
     return q_pos
 
 
 def calc_angvel(q, rate=1, winSize=5, order=2):
-    """Take a quaternion, and convert it into the corresponding angular
-    velocity
+    """Given quaternion(s), compute corresponding angular velocity
 
     Parameters
     ----------

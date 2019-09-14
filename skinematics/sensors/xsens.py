@@ -58,9 +58,14 @@ class XSens(IMU_Base):
 
 
 if __name__ == "__main__":
-    my_sensor = XSens(in_file=r"..\tests\data\data_xsens.txt")
-
+    import os.path as osp
     import matplotlib.pyplot as plt
+
+    here = osp.dirname(__file__)
+    in_file = osp.join(osp.dirname(here), "tests", "data",
+                       "data_xsens.txt")
+    my_sensor = XSens(in_file=in_file)
+
     plt.plot(my_sensor.quat[:, 1:])
     plt.show()
     print("Done")

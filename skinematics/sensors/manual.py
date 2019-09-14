@@ -46,16 +46,20 @@ class MyOwnSensor(IMU_Base):
 
 
 if __name__ == "__main__":
+    import os.path as osp
     from skinematics.sensors.xsens import XSens
     import matplotlib.pyplot as plt
 
-    xsens_sensor = XSens(in_file=r"..\tests\data\data_xsens.txt")
+    here = osp.dirname(__file__)
+    in_file = osp.join(osp.dirname(here), "tests", "data",
+                       "data_xsens.txt")
+    xsens_sensor = XSens(in_file=in_file)
 
     in_data = {"rate": xsens_sensor.rate,
                "acc": xsens_sensor.acc,
                "omega": xsens_sensor.omega,
                "mag": xsens_sensor.mag}
-    my_sensor = MyOwnSensor(in_file="My own 123 sensor.", in_data=in_data)
+    my_sensor = MyOwnSensor(in_file="My own 123 sensor", in_data=in_data)
     print(my_sensor.omega[:3, :])
 
     plt.plot(my_sensor.acc)

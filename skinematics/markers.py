@@ -102,8 +102,10 @@ def analyze_3Dmarkers(MarkerPos, ReferencePos):
 
 
 def find_trajectory(r0, Position, Orientation):
-    """Movement trajetory  of a  point on  an object,  from the  position and
-    orientation of a sensor, and the relative position of the point at t=0.
+    """Movement trajetory of a point on an object
+
+    Movement from the position and orientation of a sensor, and the
+    relative position of the point at t=0.
 
     Parameters
     ----------

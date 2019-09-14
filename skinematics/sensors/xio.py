@@ -150,12 +150,14 @@ class XIO(IMU_Base):
 
 
 if __name__ == "__main__":
-    test_dir = r"../tests/data/data_xio"
-    assert os.path.exists(test_dir)
-
-    my_sensor = XIO(in_file=test_dir)
-
+    import os.path as osp
     import matplotlib.pyplot as plt
+
+    here = osp.dirname(__file__)
+    test_dir = osp.join(osp.dirname(here), "tests", "data",
+                        "data_xio")
+    assert os.path.exists(test_dir)
+    my_sensor = XIO(in_file=test_dir)
 
     plt.plot(my_sensor.acc)
     print(my_sensor.rate)

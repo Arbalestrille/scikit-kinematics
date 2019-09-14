@@ -60,7 +60,9 @@ class Orientation_OGL:
     win_width : integer
             Pixel-width of the display window.
     win_height : integer
-            Pixel-height of the display window.
+        Pixel-height of the display window.
+    win_title : string
+        Title for the display window.
 
     Examples
     --------
@@ -242,7 +244,7 @@ class Orientation_OGL:
 
 
 def orientation(quats, out_file=None, title_text=None, deltaT=100):
-    """Calculates orientation of an arrow-patch to visualize a quaternion
+    """Calculate orientation of an arrow-patch to visualize a quaternion
 
     Uses `_update_func` for the display.
 
