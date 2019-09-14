@@ -22,6 +22,7 @@ Notable aspects:
 
 """
 
+import sys
 import tkinter as tk
 import numpy as np
 import pandas as pd
@@ -29,9 +30,10 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.lines import Line2D
 from os.path import expanduser, join
-from mpl_toolkits.mplot3d import axes3d
+from mpl_toolkits.mplot3d import axes3d  # noqa:F401
 import matplotlib.animation as animation
-from skinematics import vector
+from skinematics import rotmat
+from skinematics.vector import rotate_vector
 # For Orientation_Viewers
 # import pygame
 # To avoid the annoying "Hello from the pygame community":
@@ -55,10 +57,13 @@ class Orientation_OGL:
 
     Parameters
     ----------
-    quat_in : (Nx3) or (Nx4) array
-            Quaternion containing the orientation
+    quats : (Nx3) or (Nx4) array
+        Quaternions containing the orientation time series
+    R_init : (3x3 array)
+        Rotation matrix defining the initial orientation. Default is
+        np.eye(3)
     win_width : integer
-            Pixel-width of the display window.
+        Pixel-width of the display window.
     win_height : integer
         Pixel-height of the display window.
     win_title : string
@@ -74,43 +79,53 @@ class Orientation_OGL:
 
     """
 
-    def __init__(self, quat_in=None, rate=50, looping=False,
-                 win_width=800, win_height=600):
-        '''Initialize the OpenGL-viewer'''
+    def __init__(self, quats=None, R_init=np.eye(3),
+                 win_width=800, win_height=600, win_title=None):
+        """Initialize the OpenGL-viewer"""
+
+        # Initial orientation
+        self.R_init = R_init
 
         # Camera
         self.cam_pos = [0.2, 0.2, 0]
         self.cam_target = [0, 0, -1]
         self.cam_up = [0, 1, 0]
 
-        # OpenGL to my convention
+        # OpenGL to Skinematics (OGL_x=skin_x; OGL_y=skin_z; OGL_z=-skin_y)
         x = [1, 0, 0]
         y = [0, 0, -1]
         z = [0, 1, 0]
         self.openGL2skin = np.column_stack((x, y, z))
 
-        # Initialize the pygame grafics setup
+        # Initialize the pygame graphics setup
         pygame.init()
         self.display = (win_width, win_height)
         pygame.display.set_mode(self.display,
                                 pygame.DOUBLEBUF | pygame.OPENGL)
+        if win_title:
+            pygame.display.set_caption(win_title)
 
         self.define_elements()
-        self.quat = quat_in
+        self.quats = quats
 
     def define_elements(self):
         """Define the visual components"""
 
         # Define the pointer
         delta = 0.01
-        self.vertices = (
-            (0, -0.2, delta),
-            (0, 0.2, delta),
-            (0.6, 0, delta),
-            (0, -0.2, -delta),
-            (0, 0.2, -delta),
-            (0.6, 0, -delta),
+        vertices = (            # on OGL x-y plane
+            (0, -0.2, delta),   # top lower left
+            (0, 0.2, delta),    # top upper left
+            (0.6, 0, delta),    # top front
+            (0, -0.2, -delta),  # bottom lower left
+            (0, 0.2, -delta),   # bottom upper left
+            (0.6, 0, -delta),   # bottom front
             )
+        # Get quaternion of initial orientation in OGL CS
+        q_init = rotmat.convert(self.R_init, to="quat")
+        # Compute vertices in initial orientation using our convention
+        self.vertices = (rotate_vector(vertices, q_init) @
+                         self.openGL2skin.T)
 
         self.edges = (
             (0, 1),
@@ -123,17 +138,18 @@ class Orientation_OGL:
             (3, 5),
             (4, 5))
 
-        self.colors = (
-            (0.8, 0, 0),
-            (0.7, 0.7, 0.6),
-            (1, 1, 1))
+        self.colors = dict(
+            pointer=((0.8, 0, 0),     # reddish (top)
+                     (0.7, 0.7, 0.6),  # grayish (bottom)
+                     (1, 1, 1)),       # white (edges)
+            axes=((1, 0, 0),          # red (our x)
+                  (0, 0, 1),          # blue (our z)
+                  (0, 1, 0)))         # green (our y)
 
         self.surfaces = (
             (0, 1, 2),
             (3, 4, 5),
-            (0, 1, 3, 4),
-            (1, 4, 2, 5),
-            (0, 3, 2, 5))
+            (0, 1, 3))
 
         # Define the axes
         self.axes_endpts = np.array(
@@ -144,21 +160,16 @@ class Orientation_OGL:
              [0, 0, -1],
              [0, 0, 1]])
 
-        self.axes = (
-            (0, 1),
-            (2, 3),
-            (4, 5))
+        self.axes = ((0, 1), (2, 3), (4, 5))
 
     def draw_axes(self):
         """Draw the axes"""
 
+        # gl.glLineWidth(2)
         gl.glBegin(gl.GL_LINES)
-        gl.glColor3fv(self.colors[2])
 
-        # Here I have a difficulty with making the axes thicker
-        # glLineWidth(1.5)
-
-        for line in self.axes:
+        for i, line in enumerate(self.axes):
+            gl.glColor3fv(self.colors["axes"][i])
             for vertex in line:
                 gl.glVertex3fv(self.axes_endpts[vertex])
 
@@ -168,20 +179,32 @@ class Orientation_OGL:
         """Draw the triangle that indicates 3D orientation"""
 
         gl.glBegin(gl.GL_TRIANGLES)
-
-        for (color, surface) in zip(self.colors[:2], self.surfaces[:2]):
+        colors = self.colors["pointer"]
+        for (color, surface) in zip(colors, self.surfaces):
             for vertex in surface:
                 gl.glColor3fv(color)
                 gl.glVertex3fv(vertices[vertex])
         gl.glEnd()
 
         gl.glBegin(gl.GL_LINES)
-        gl.glColor3fv(self.colors[2])
-
+        gl.glColor3fv(colors[2])
         for edge in self.edges:
             for vertex in edge:
                 gl.glVertex3fv(vertices[vertex])
         gl.glEnd()
+
+    def draw_text(self, pos, text, color):
+        """Draw text at given position"""
+        # Append alpha
+        color.append(255)
+        font = pygame.font.SysFont("Courier", 18, True)
+        text_surface = font.render(text, True, color, (0, 0, 0, 255))
+        text_data = pygame.image.tostring(text_surface, "RGBA", True)
+        gl.glRasterPos3d(*pos)
+        gl.glDrawPixels(text_surface.get_width(),
+                        text_surface.get_height(),
+                        gl.GL_RGBA, gl.GL_UNSIGNED_BYTE,
+                        text_data)
 
     def run(self, rate=100, looping=True):
         """Run the viewer
@@ -195,13 +218,14 @@ class Orientation_OGL:
             If set to "True", the display will loop until the window is closed.
 
         """
-        dt = int(1/rate*1000)  # [msec]
+        dt = int(1 / rate * 1000)  # [msec]
 
         # Camera properties, e.g. focal length etc
         gl.glMatrixMode(gl.GL_PROJECTION)
         gl.glLoadIdentity()
 
-        glu.gluPerspective(45, (self.display[0] / self.display[1]), 0.1, 50.0)
+        glu.gluPerspective(45, (self.display[0] / self.display[1]),
+                           0.1, 50.0)
         gl.glTranslatef(0.0, 0.0, -3)
 
         counter = 0
@@ -209,10 +233,10 @@ class Orientation_OGL:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    quit()
+                    sys.exit()
 
-            counter = np.mod(counter+1, self.quat.shape[0])
-            if not looping and counter == self.quat.shape[0]-1:
+            counter = np.mod(counter, self.quats.shape[0])
+            if not looping and (counter + 1) == (self.quats.shape[0] - 1):
                 break
 
             gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
@@ -228,16 +252,20 @@ class Orientation_OGL:
 
             # Scene elements
             gl.glPushMatrix()
-            cur_corners = (vector.rotate_vector(self.vertices,
-                                                self.quat[counter]) @
-                           self.openGL2skin.T)
-            # This seems to be required to get things right - but I don't
-            # understand OpenGL at this point
-            # cur_corners = cur_corners * np.r_[1, 1, -1]
-
-            self.draw_pointer(cur_corners)
+            vertices_i = rotate_vector(self.vertices, self.quats[counter])
+            self.draw_pointer(vertices_i)
             gl.glPopMatrix()
             self.draw_axes()
+            # Label *our* x coordinate
+            self.draw_text((1, 0, 0), r"x (+)",
+                           [x * 255 for x in self.colors["axes"][0]])
+            # Label *our* y coordinate
+            self.draw_text((0, 0, -1), "y (+)",
+                           [x * 255 for x in self.colors["axes"][2]])
+            # Label *our* z coordinate
+            self.draw_text((0, 1, 0), "z (+)",
+                           [x * 255 for x in self.colors["axes"][1]])
+            counter += 1
 
             pygame.display.flip()
             pygame.time.wait(dt)
@@ -307,8 +335,8 @@ def orientation(quats, out_file=None, title_text=None, deltaT=100):
     # Calculate the new orientations, given the quaternion orientation
     all_corners = []
     for quat in quats:
-        all_corners.append([vector.rotate_vector(corner_arrays[0], quat),
-                            vector.rotate_vector(corner_arrays[1], quat)])
+        all_corners.append([rotate_vector(corner_arrays[0], quat),
+                            rotate_vector(corner_arrays[1], quat)])
 
     # Animate the whole thing, using 'update_func'
     num_frames = len(quats)
@@ -326,8 +354,6 @@ def orientation(quats, out_file=None, title_text=None, deltaT=100):
             print('You probably have to install "ffmpeg", and add it to PATH.')
 
     plt.show()
-
-    return
 
 
 def _update_func(num, all_corners, colors, ax, title=None):
@@ -981,7 +1007,7 @@ def ts(data=None):
     """
 
     root = tk.Tk()
-    display = Display(root, data)
+    Display(root, data)
     root.mainloop()
 
 
