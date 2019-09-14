@@ -30,6 +30,13 @@ from skinematics import quat, vector, misc, rotmat  # noqa: E401
 import abc
 
 
+_QTYPES = ["analytical",
+           "kalman",
+           "madgwick",
+           "mahony",
+           None]
+
+
 class IMU_Base(metaclass=abc.ABCMeta):
     """Abstract BaseClass for working with inertial measurement units (IMUs)
 
@@ -185,35 +192,24 @@ class IMU_Base(metaclass=abc.ABCMeta):
                 self.calc_position()
 
     def set_qtype(self, type_value):
-        """Sets q_type, and automatically performs the relevant calculations.
-        q_type determines how the orientation is calculated.
-        If "q_type" is "None", no orientation gets calculated; otherwise,
-        the orientation calculation is performed with
-        "_calc_orientation", using the option "q_type".
+        """Set q_type and automatically perform relevant calculations
 
-        It has to be one of the following values:
-
-        * analytical
-        * kalman
-        * madgwick
-        * mahony
-        * None
+        q_type determines how the orientation is calculated.  If "q_type"
+        is "None", no orientation gets calculated; otherwise, the
+        orientation calculation is performed with "_calc_orientation",
+        using the option "q_type".  It has to be one of the following
+        values in _QTYPES.
 
         """
-        allowed_values = ["analytical",
-                          "kalman",
-                          "madgwick",
-                          "mahony",
-                          None]
-        if type_value in allowed_values:
+        if type_value in _QTYPES:
             self.q_type = type_value
             if type_value is None:
                 self.quat = None
             else:
                 self._calc_orientation()
         else:
-            msg = "q_type must be one of the following: {0}, not {1}"
-            raise ValueError(msg.format(allowed_values, type_value))
+            msg = "q_type must be one of: {0}, not {1}"
+            raise ValueError(msg.format(_QTYPES, type_value))
 
     def _set_data(self, data):
         # Set the properties of an IMU-object directly
@@ -417,7 +413,7 @@ def analytical(R_initialOrientation=np.eye(3),
 
 def kalman(rate, acc, omega, mag, D=[0.4, 0.4, 0.4],
            tau=[0.5, 0.5, 0.5], Q_k=None, R_k=None):
-    """Calclulate the orientation from IMU magnetometer data
+    """Calculate orientation from IMU magnetometer data
 
     Parameters
     ----------
@@ -761,7 +757,7 @@ if __name__ == "__main__":
 
     show_result(sensor)
 
-    sensor.set_qtype = "kalman"
+    sensor.set_qtype("kalman")
     q_Kalman = sensor.quat
 
     show_result(sensor)
