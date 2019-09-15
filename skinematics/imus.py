@@ -122,7 +122,8 @@ class IMU_Base(metaclass=abc.ABCMeta):
         """
 
     def __init__(self, in_file=None, q_type="analytical", R_init=np.eye(3),
-                 calculate_position=True, pos_init=np.zeros(3), in_data=None):
+                 calculate_position=True, pos_init=np.zeros(3),
+                 in_data=None, **kwargs):
         """Initialize an IMU-object
 
         Note that this includes a number of activities:
@@ -161,6 +162,8 @@ class IMU_Base(metaclass=abc.ABCMeta):
         in_data : dictionary
             If the data are provided directly, not from a file
             Also used to provide "rate" for "polulu" sensors.
+        **kwargs : optional keyword arguments
+            Arguments passed to the quaternion computing function.
 
         """
 
@@ -187,13 +190,13 @@ class IMU_Base(metaclass=abc.ABCMeta):
 
         # Set the analysis method, and consolidate the object (see below)
         # This also means calculating the orientation quaternion!!
-        self.set_qtype(q_type)
+        self.set_qtype(q_type, **kwargs)
 
         if q_type is not None:
             if calculate_position:
                 self.calc_position()
 
-    def set_qtype(self, type_value):
+    def set_qtype(self, q_type, **kwargs):
         """Set q_type and automatically perform relevant calculations
 
         q_type determines how the orientation is calculated.  If "q_type"
@@ -202,19 +205,29 @@ class IMU_Base(metaclass=abc.ABCMeta):
         using the option "q_type".  It has to be one of the following
         values in _QTYPES.
 
+        Parameters
+        ----------
+        type : string
+            - "analytical" quaternion integration of angular velocity
+            - "kalman" quaternion Kalman filter
+            - "madgwick" gradient descent method, efficient
+            - "mahony" formula from Mahony, as implemented by Madgwick
+        **kwargs : optional keyword arguments
+            Arguments passed to the quaternion computing function.
+
         """
-        if type_value in _QTYPES:
-            self.q_type = type_value
-            if type_value is None:
+        if q_type in _QTYPES:
+            self.q_type = q_type
+            if q_type is None:
                 self.quat = None
             else:
-                self._calc_orientation()
+                self._calc_orientation(**kwargs)
         else:
             msg = "q_type must be one of: {0}, not {1}"
-            raise ValueError(msg.format(_QTYPES, type_value))
+            raise ValueError(msg.format(_QTYPES, q_type))
 
     def _set_data(self, data):
-        # Set the properties of an IMU-object directly
+        """Set the properties of an IMU-object directly"""
 
         if "rate" not in data.keys():
             print('Set the "rate" to the default value (100 Hz).')
@@ -228,37 +241,40 @@ class IMU_Base(metaclass=abc.ABCMeta):
         self.source = None
         self._set_info()
 
-    def _calc_orientation(self):
+    def _calc_orientation(self, **kwargs):
         """Calculate the current orientation
 
         Parameters
         ----------
-        type : string
-            - "analytical" quaternion integration of angular velocity
-            - "kalman" quaternion Kalman filter
-            - "madgwick" gradient descent method, efficient
-            - "mahony" formula from Mahony, as implemented by Madgwick
+        **kwargs : optional keyword arguments
+            Arguments passed to the quaternion computing function.
 
         """
 
-        initialPosition = np.r_[0, 0, 0]
-
         method = self.q_type
         if method == "analytical":
-            (quaternion, position, velocity) = analytical(self.R_init,
-                                                          self.omega,
-                                                          initialPosition,
-                                                          self.acc, self.rate)
+            init_pos = kwargs.pop("initialPosition", np.zeros(3))
+            res = analytical(omega=self.omega, accMeasured=self.acc,
+                             R_initialOrientation=self.R_init,
+                             initialPosition=init_pos, rate=self.rate)
+            quaternion, position, velocity = res
 
         elif method == "kalman":
             self._checkRequirements()
+            D = kwargs.pop("D", [0.4, 0.4, 0.4])
+            tau = kwargs.pop("tau", [0.5, 0.5, 0.5])
+            Q_k = kwargs.pop("Q_k", None)
+            R_k = kwargs.pop("R_k", None)
             quaternion = kalman(self.rate, self.acc,
-                                np.deg2rad(self.omega), self.mag)
+                                np.deg2rad(self.omega), self.mag,
+                                D=D, tau=tau, Q_k=Q_k, R_k=R_k)
 
         elif method == "madgwick":
             self._checkRequirements()
             # Initialize object
-            AHRS = Madgwick(rate=self.rate, Beta=0.5)
+            beta = kwargs.pop("Beta", 0.5)
+            q_earth = kwargs.pop("Quaternion", [1, 0, 0, 0])
+            AHRS = Madgwick(rate=self.rate, Beta=beta, Quaternion=q_earth)
             quaternion = np.zeros((self.totalSamples, 4))
             # The "Update"-function uses angular velocity in radian/s, and
             # only the directions of acceleration and magnetic field
@@ -274,7 +290,11 @@ class IMU_Base(metaclass=abc.ABCMeta):
         elif method == "mahony":
             self._checkRequirements()
             # Initialize object
-            AHRS = Mahony(rate=np.float(self.rate), Kp=0.4)
+            Kp = kwargs.pop("Kp", 0.4)
+            Ki = kwargs.pop("Ki", 0)
+            q_earth = kwargs.pop("Quaternion", [1, 0, 0, 0])
+            AHRS = Mahony(rate=np.float(self.rate), Kp=Kp, Ki=Ki,
+                          Quaternion=q_earth)
             quaternion = np.zeros((self.totalSamples, 4))
             # The "Update"-function uses angular velocity in radian/s, and
             # only the directions of acceleration and magnetic field
@@ -331,8 +351,7 @@ class IMU_Base(metaclass=abc.ABCMeta):
         self.dataType = str(self.omega.dtype)
 
 
-def analytical(R_initialOrientation=np.eye(3),
-               omega=np.zeros((5, 3)),
+def analytical(R_initialOrientation=np.eye(3), omega=np.zeros((5, 3)),
                initialPosition=np.zeros(3),
                accMeasured=np.column_stack((np.zeros((5, 2)),
                                             9.81 * np.ones(5))),
