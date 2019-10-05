@@ -1,7 +1,6 @@
 """Simulations of IMU-signals during 3D movements"""
 
 import numpy as np
-import matplotlib.pyplot as plt
 import scipy as sp
 import skinematics as skin
 from scipy.constants import g
@@ -27,9 +26,9 @@ def make_gauss(rate=1000, duration=1, t_0=0.5, sigma=0.1):
         Time-step
     """
 
-    dt = 1./rate
+    dt = 1.0 / rate
     t = np.arange(0, duration, dt)
-    gaussian = np.exp(-(t-t_0)**2/(2 * sigma**2))
+    gaussian = np.exp(-(t - t_0) ** 2 / (2 * sigma ** 2))
     gauss_integral = sp.integrate.simps(gaussian, dx=dt)
     gauss = gaussian / gauss_integral
 
@@ -223,122 +222,84 @@ def save_as(imu_data, data_format, file_name):
         * "xsens" [tbd]
 
     """
+    pass
 
 
-if __name__ == "__main__":
-    duration_movement = 1       # [sec]
-    duration_total = 1          # [sec]
-    rate = 100                  # [Hz]
-    B0 = skin.vector.normalize([0, -1, -1])
-    rotation_axis = [0, 0, 1]
-    angle = 50
-    translation = [1, 0, 0]
-    distance = 0
-    q_init = [0, 0, 0]
-    pos_init = [-10, -5, 0]
+def _imu_cat(N, **kwargs):
+    """Generate a sequence of movements with simulated IMU signals"""
+    rate = kwargs.pop("rate")
+    t_moves = kwargs.pop("t_moves")
+    t_totals = kwargs.pop("t_totals")
+    q_init = kwargs.pop("q_init")
+    rotation_axes = kwargs.pop("rotation_axes")
+    degs = kwargs.pop("degs")
+    pos_init = kwargs.pop("pos_init")
+    directions = kwargs.pop("directions")
+    distances = kwargs.pop("distances")
+    B0 = kwargs.pop("B0")
 
-    imu_list = []
-    pq_list = []
+    imu_l = []
+    pq_l = []
+    for i in range(N):
+        if i > 0:
+            q_init_i = q_init[-1]
+            pos_init_i = pos_init[-1]
+        else:
+            q_init_i = q_init
+            pos_init_i = pos_init
 
-    new_movement, new_pq = simulate_imu(rate, duration_movement,
-                                        duration_total, q_init=q_init,
-                                        rotation_axis=rotation_axis,
-                                        deg=angle, pos_init=pos_init,
-                                        direction=translation,
-                                        distance=distance, B0=B0)
-    imu_list.append(new_movement)
-    pq_list.append(new_pq)
+        new_move, new_pq = simulate_imu(rate=rate, t_move=t_moves[i],
+                                        t_total=t_totals[i],
+                                        q_init=q_init_i,
+                                        rotation_axis=rotation_axes[i],
+                                        deg=degs[i], pos_init=pos_init_i,
+                                        direction=directions[i],
+                                        distance=distances[i], B0=B0)
+        # Need only vector part of quat here to build q_init
+        q_init = np.vstack((q_init, new_pq["quat"][-1][1:]))
+        pos_init = np.vstack((pos_init, new_pq["pos"][-1]))
+        imu_l.append(new_move)
+        pq_l.append(new_pq)
 
-    new_movement, new_pq = simulate_imu(rate, duration_movement,
-                                        duration_total,
-                                        q_init=new_pq["quat"][-1],
-                                        rotation_axis=rotation_axis,
-                                        deg=-angle,
-                                        pos_init=new_pq["pos"][-1],
-                                        direction=translation,
-                                        distance=-distance, B0=B0)
-    imu_list.append(new_movement)
-    pq_list.append(new_pq)
-
-    rotation_axis = [0, 1, 0]
-    new_movement, new_pq = simulate_imu(rate, duration_movement,
-                                        duration_total, q_init=q_init,
-                                        rotation_axis=rotation_axis,
-                                        deg=angle, pos_init=pos_init,
-                                        direction=translation,
-                                        distance=distance, B0=B0)
-    imu_list.append(new_movement)
-    pq_list.append(new_pq)
-
-    new_movement, new_pq = simulate_imu(rate, duration_movement,
-                                        duration_total,
-                                        q_init=new_pq['quat'][-1],
-                                        rotation_axis=rotation_axis,
-                                        deg=-angle,
-                                        pos_init=new_pq['pos'][-1],
-                                        direction=translation,
-                                        distance=-distance, B0=B0)
-    imu_list.append(new_movement)
-    pq_list.append(new_pq)
-
-    rotation_axis = [1, 0, 0]
-    new_movement, new_pq = simulate_imu(rate, duration_movement,
-                                        duration_total, q_init=q_init,
-                                        rotation_axis=rotation_axis,
-                                        deg=angle, pos_init=pos_init,
-                                        direction=translation,
-                                        distance=distance, B0=B0)
-    imu_list.append(new_movement)
-    pq_list.append(new_pq)
-
-    new_movement, new_pq = simulate_imu(rate, duration_movement,
-                                        duration_total,
-                                        q_init=new_pq["quat"][-1],
-                                        rotation_axis=rotation_axis,
-                                        deg=-angle, pos_init=new_pq["pos"][-1],
-                                        direction=translation,
-                                        distance=-distance, B0=B0)
-    imu_list.append(new_movement)
-    pq_list.append(new_pq)
-
-    # Integrate into one list
-    imu_total = imu_list[0]
-    pq_total = pq_list[0]
-
-    for imu in imu_list[1:]:
-        for key in imu_total.keys():
+    imu_all = imu_l[0]
+    pq_all = pq_l[0]
+    for imu in imu_l[1:]:
+        for key in imu_all.keys():
             if (key == "rate") or (key == "time"):
                 continue
             else:
-                imu_total[key] = np.vstack((imu_total[key], imu[key]))
+                imu_all[key] = np.vstack((imu_all[key], imu[key]))
+        imu_all["rate"] = rate
+        imu_all["time"] = np.arange(imu_all["gia"].shape[0]) / rate
 
-        imu_total["rate"] = rate
-        imu_total["time"] = np.arange(imu_total["gia"].shape[0])/rate
+    for pq in pq_l[1:]:
+        for key in pq_all.keys():
+            pq_all[key] = np.vstack((pq_all[key], pq[key]))
 
-    for pq in pq_list[1:]:
-        for key in pq_total.keys():
-            pq_total[key] = np.vstack((pq_total[key], pq[key]))
+    return(imu_all)
 
+
+if __name__ == "__main__":
+    # Set up a series of 6 movements
+    rate = 100                  # [Hz]
+    t_moves = [1] * 6           # [s]
+    t_totals = [1] * 6          # [s]
+    q_init = np.array([0, 0, 0])
+    degs = [50, -50, 50, -50, 50, -50]
+    rotation_axes = [[0, 0, 1]] * 2
+    rotation_axes.extend([[0, 1, 0]] * 2)
+    rotation_axes.extend([[1, 0, 0]] * 2)
+    pos_init = np.array([-10, -5, 0])
+    translations = [[1, 0, 0]] * 6
+    distances = [0] * 6
+    B0 = skin.vector.normalize([0, -1, -1])
+
+    imu = _imu_cat(N=6, rate=rate, t_moves=t_moves, t_totals=t_totals,
+                   q_init=q_init, rotation_axes=rotation_axes, degs=degs,
+                   pos_init=pos_init, directions=translations,
+                   distances=distances, B0=B0)
     q, pos, vel = skin.imus.analytical(R_initialOrientation=np.eye(3),
-                                       omega=imu_total["omega"],
+                                       omega=imu["omega"],
                                        initialPosition=np.zeros(3),
-                                       accMeasured=imu_total["gia"],
+                                       accMeasured=imu["gia"],
                                        rate=rate)
-
-    fig, axs = plt.subplots(1, 3)
-    axs[0].plot(imu_total["time"], q[:, 1:], label="calculated")
-    axs[0].set_xlabel("Time [s]")
-    axs[0].set_ylabel("quat")
-    axs[0].legend()
-
-    axs[1].plot(imu_total["time"], vel, label="calculated")
-    axs[1].set_xlabel("Time [s]")
-    axs[1].set_ylabel("Velocity [m/s]")
-    axs[1].legend()
-
-    axs[2].plot(imu_total['time'], pos, label='calculated')
-    axs[2].set_xlabel('Time [s]')
-    axs[2].set_ylabel('Position [m]')
-    axs[2].legend()
-
-    plt.show()
