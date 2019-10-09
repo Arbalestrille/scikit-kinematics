@@ -40,9 +40,8 @@ from skinematics.vector import rotate_vector
 import contextlib
 with contextlib.redirect_stdout(None):
     import pygame
-
-import OpenGL.GL as gl
-import OpenGL.GLU as glu
+import OpenGL.GL as gl          # noqa: E402
+import OpenGL.GLU as glu        # noqa: E402
 
 # List if plottable datatypes
 _PLOTTABLE = [np.ndarray, pd.core.frame.DataFrame, pd.core.series.Series]
@@ -68,6 +67,15 @@ class Orientation_OGL:
         Pixel-height of the display window.
     win_title : string
         Title for the display window.
+
+    Note
+    ----
+    The user is responsible for ensuring the input quaternions match the
+    right-handed coordinate frame shown in the display.  This requires
+    remapping and reorienting the vector part of the quaternions onto OGL's
+    convention, whereby the x-axis points to the right of the window, the
+    y-axis points up, and the z-axis poins towards the viewer (away from
+    the screen).
 
     Examples
     --------
@@ -142,9 +150,9 @@ class Orientation_OGL:
             pointer=((0.8, 0, 0),     # reddish (top)
                      (0.7, 0.7, 0.6),  # grayish (bottom)
                      (1, 1, 1)),       # white (edges)
-            axes=((1, 0, 0),          # red (our x)
-                  (0, 0, 1),          # blue (our z)
-                  (0, 1, 0)))         # green (our y)
+            axes=((1, 0, 0),           # red (our x)
+                  (0, 0, 1),           # blue (our z)
+                  (0, 1, 0)))          # green (our y)
 
         self.surfaces = (
             (0, 1, 2),
@@ -260,11 +268,14 @@ class Orientation_OGL:
             self.draw_text((1, 0, 0), r"x (+)",
                            [x * 255 for x in self.colors["axes"][0]])
             # Label *our* y coordinate
-            self.draw_text((0, 0, -1), "y (+)",
+            self.draw_text((0, 0, -1), r"y (+)",
                            [x * 255 for x in self.colors["axes"][2]])
             # Label *our* z coordinate
-            self.draw_text((0, 1, 0), "z (+)",
+            self.draw_text((0, 1, 0), r"z (+)",
                            [x * 255 for x in self.colors["axes"][1]])
+            # Draw counter
+            self.draw_text((1, -1, 0), r"Index: {}".format(counter),
+                           [x * 255 for x in self.colors["pointer"][2]])
             counter += 1
 
             pygame.display.flip()
@@ -1012,8 +1023,17 @@ def ts(data=None):
 
 
 if __name__ == '__main__':
+    import os.path as osp
+    from sensors.xsens import XSens
 
-    # 2D Viewer -----------------
+    # Test OpenGL viewer
+    in_file = osp.join(osp.dirname(__file__), "tests", "data",
+                       "data_xsens.txt")
+    data = XSens(in_file)
+    viewer = Orientation_OGL(quats=data.quat)
+    viewer.run(looping=False, rate=100)
+
+    # 2D Viewer
     data = np.random.randn(100, 3)
     t = np.arange(0, 2 * np.pi, 0.1)
     x = np.sin(t)
