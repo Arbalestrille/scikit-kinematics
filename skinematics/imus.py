@@ -324,13 +324,10 @@ class IMU_Base(metaclass=abc.ABCMeta):
                                                       quat.q_inv(self.quat))
         accReSpace = vector.rotate_vector(accReSensor, self.quat)
         # Position and Velocity through integration, assuming 0-velocity at t=0
-        vel = np.nan * np.ones_like(accReSpace)
+        vel = cumtrapz(accReSpace, dx=1.0 / np.float(self.rate),
+                       initial=0, axis=0)
         pos = np.nan * np.ones_like(accReSpace)
-
         for ii in range(accReSpace.shape[1]):
-            vel[:, ii] = cumtrapz(accReSpace[:, ii],
-                                  dx=1.0 / np.float(self.rate),
-                                  initial=0)
             pos[:, ii] = cumtrapz(vel[:, ii], dx=1.0 / np.float(self.rate),
                                   initial=initialPosition[ii])
 
@@ -638,7 +635,7 @@ class Madgwick:
              2 * (q[0] * q[1] + q[2] * q[3]) - Accelerometer[1],
              2 * (0.5 - q[1] ** 2 - q[2] ** 2) - Accelerometer[2],
              (2 * b[1] * (0.5 - q[2] ** 2 - q[3] ** 2) + 2 * b[3] *
-              (q[1] * q[3] - q[0]*q[2]) - Magnetometer[0]),
+              (q[1] * q[3] - q[0] * q[2]) - Magnetometer[0]),
              (2 * b[1] * (q[1] * q[2] - q[0] * q[3]) + 2 * b[3] *
               (q[0] * q[1] + q[2] * q[3]) - Magnetometer[1]),
              (2 * b[1] * (q[0] * q[2] + q[1] * q[3]) + 2 * b[3] *
