@@ -278,9 +278,9 @@ class IMU_Base(metaclass=abc.ABCMeta):
             quaternion = np.zeros((self.totalSamples, 4))
             # The "Update"-function uses angular velocity in radian/s, and
             # only the directions of acceleration and magnetic field
-            Gyr = self.omega
-            Acc = vector.normalize(self.acc)
-            Mag = vector.normalize(self.mag)
+            Gyr = self.omega.copy()
+            Acc = vector.normalize(self.acc.copy())
+            Mag = vector.normalize(self.mag.copy())
             # for t in range(len(time)):
             for t in misc.progressbar(range(self.totalSamples),
                                       "Calculating the Quaternions ", 25):
@@ -298,9 +298,9 @@ class IMU_Base(metaclass=abc.ABCMeta):
             quaternion = np.zeros((self.totalSamples, 4))
             # The "Update"-function uses angular velocity in radian/s, and
             # only the directions of acceleration and magnetic field
-            Gyr = self.omega
-            Acc = vector.normalize(self.acc)
-            Mag = vector.normalize(self.mag)
+            Gyr = self.omega.copy()
+            Acc = vector.normalize(self.acc.copy())
+            Mag = vector.normalize(self.mag.copy())
             # for t in range(len(time)):
             for t in misc.progressbar(range(self.totalSamples),
                                       "Calculating the Quaternions ", 25):
