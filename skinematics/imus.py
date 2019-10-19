@@ -315,21 +315,20 @@ class IMU_Base(metaclass=abc.ABCMeta):
 
     def calc_position(self):
         """Calculate the position, assuming orientation is already known"""
-        initialPosition = self.pos_init
+        pos_init = self.pos_init
         # Acceleration, velocity, and position
         # From q and the measured acceleration, get the \frac{d^2x}{dt^2}
         g = constants.g
-        g_v = np.r_[0, 0, g]
-        accReSensor = self.acc - vector.rotate_vector(g_v,
-                                                      quat.q_inv(self.quat))
-        accReSpace = vector.rotate_vector(accReSensor, self.quat)
+        g_v = vector.rotate_vector(np.r_[0, 0, g], quat.q_inv(self.quat))
+        acc_sensor = self.acc - g_v
+        acc_space = vector.rotate_vector(acc_sensor, self.quat)
         # Position and Velocity through integration, assuming 0-velocity at t=0
-        vel = cumtrapz(accReSpace, dx=1.0 / np.float(self.rate),
+        vel = cumtrapz(acc_space, dx=1.0 / np.float(self.rate),
                        initial=0, axis=0)
-        pos = np.nan * np.ones_like(accReSpace)
-        for ii in range(accReSpace.shape[1]):
+        pos = np.nan * np.ones_like(acc_space)
+        for ii in range(acc_space.shape[1]):
             pos[:, ii] = cumtrapz(vel[:, ii], dx=1.0 / np.float(self.rate),
-                                  initial=initialPosition[ii])
+                                  initial=pos_init[ii])
 
         self.vel = vel
         self.pos = pos
