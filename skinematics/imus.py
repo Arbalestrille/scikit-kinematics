@@ -313,12 +313,19 @@ class IMU_Base(metaclass=abc.ABCMeta):
 
         self.quat = quaternion
 
-    def calc_position(self):
-        """Calculate the position, assuming orientation is already known"""
+    def calc_position(self, g=constants.g):
+        """Calculate the position, assuming orientation is already known
+
+        Parameters
+        ----------
+        g : float, optional
+            Assume gravity (m / s^2) is equal to this value.  Default to
+            standard gravity.
+
+        """
         pos_init = self.pos_init
         # Acceleration, velocity, and position
         # From q and the measured acceleration, get the \frac{d^2x}{dt^2}
-        g = constants.g
         g_v = vector.rotate_vector(np.r_[0, 0, g], quat.q_inv(self.quat))
         acc_sensor = self.acc - g_v
         acc_space = vector.rotate_vector(acc_sensor, self.quat)
@@ -350,7 +357,7 @@ class IMU_Base(metaclass=abc.ABCMeta):
 def analytical(R_initialOrientation=np.eye(3), omega=np.zeros((5, 3)),
                initialPosition=np.zeros(3),
                accMeasured=np.column_stack((np.zeros((5, 2)),
-                                            9.81 * np.ones(5))),
+                                            constants.g * np.ones(5))),
                rate=100):
     """Reconstruct position and orientation with an analytical solution
 
