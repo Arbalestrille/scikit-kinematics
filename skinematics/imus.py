@@ -22,10 +22,13 @@ Author: Thomas Haslwanter
 """
 
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import constants     # for "g"
 from scipy.integrate import cumtrapz
-from skinematics import quat, vector, misc, rotmat  # noqa: E401
+from skinematics import quat, vector, misc, rotmat, utils  # noqa: E401
+import allantools as allan
+from sklearn import preprocessing
 # For the definition of the abstract base class IMU_Base
 import abc
 
@@ -43,22 +46,23 @@ class IMU_Base(metaclass=abc.ABCMeta):
     A concrete class must be instantiated, which implements
     "get_data". (See example below.)
 
-    Attributes:
-        acc (Nx3 array): 3D linear acceleration [m/s**2]
-        dataType (string): Type of data (commonly float)
-        duration (float): Duration of recording [sec]
-        mag (Nx3 array): 3D orientation of local magnectic field
-        omega (Nx3 array): 3D angular velocity [rad/s]
-        pos (Nx3 array): 3D position
-        pos_init (3-vector): Initial position. default is np.ones(3)
-        quat (Nx4 array): 3D orientation
-        q_type (string): Method of calculation for orientation quaternion
-        rate (float): Sampling rate
-        R_init (3x3 array): Rotation matrix defining the initial
-                            orientation. Default is np.eye(3)
-        source (str): Name of data-file
-        totalSamples (int): Number of samples
-        vel (Nx3 array): 3D velocity
+    Attributes
+    ----------
+    acc (Nx3 array): 3D linear acceleration [m/s**2]
+    dataType (string): Type of data (commonly float)
+    duration (float): Duration of recording [sec]
+    mag (Nx3 array): 3D orientation of local magnectic field
+    omega (Nx3 array): 3D angular velocity [rad/s]
+    pos (Nx3 array): 3D position
+    pos_init (3-vector): Initial position. default is np.ones(3)
+    quat (Nx4 array): 3D orientation
+    q_type (string): Method of calculation for orientation quaternion
+    rate (float): Sampling rate
+    R_init (3x3 array): Rotation matrix defining the initial
+                        orientation. Default is np.eye(3)
+    source (str): Name of data-file
+    totalSamples (int): Number of samples
+    vel (Nx3 array): 3D velocity
 
     Parameters
     ----------
@@ -352,6 +356,72 @@ class IMU_Base(metaclass=abc.ABCMeta):
         self.totalSamples = len(self.omega)
         self.duration = np.float(self.totalSamples) / self.rate  # [sec]
         self.dataType = str(self.omega.dtype)
+
+    def _allan_deviation(self, sensor):
+        """Compute Allan deviation for all axes of a given sensor
+
+        Parameters
+        ----------
+        sensor : str
+            Attribute name of the sensor of interest
+
+        Returns
+        -------
+        DataFrame
+
+            Allan deviation and error for each sensor axis.  DataFrame
+            index is the averaging time `tau` for each estimate.
+
+        """
+        sensor_obj = getattr(self, sensor)
+        sensor_std = preprocessing.scale(sensor_obj, with_std=False)
+
+        allan_l = []
+        for axis in sensor_std.T:
+            taus, adevs, errs, ns = allan.mdev(axis, rate=self.rate,
+                                               data_type="freq",
+                                               taus="octave")
+            # taus is common to all sensor axes
+            adevs_df = pd.DataFrame(np.column_stack((adevs, errs)),
+                                    columns=["allan_dev", "error"],
+                                    index=taus)
+            allan_l.append(adevs_df)
+
+        keys = [sensor + "_" + i for i in list("xyz")]
+        devs = pd.concat(allan_l, axis=1, keys=keys)
+        return(devs)
+
+    def allan_slope_coefs(self, sensor):
+        """Estimate Allan deviation coefficients for each error type
+
+        Parameters
+        ----------
+        sensor : str
+            Attribute name of the sensor of interest
+
+        Returns
+        -------
+        coefs_all : pandas.DataFrame
+            Allan deviation coefficient and corresponding averaging time
+            for each sensor axis and error type.
+        adevs_errs : pandas.DataFrame
+            Allan deviation and corresponding averaging time for each
+            sensor axis and error type.
+
+        """
+        adevs_errs = self._allan_deviation(sensor)
+        taus = adevs_errs.index.values
+        adevs = adevs_errs.xs("allan_dev", level=1, axis=1).values
+
+        coefs = []
+        for adev_i in adevs.T:
+            coefs_i = utils.allan_slope_coefs(taus, adev_i)
+            # Parse output for dataframe
+            coefs.append(pd.DataFrame(coefs_i, index=["tau", "coef"]))
+
+        keys = [sensor + "_" + i for i in list("xyz")]
+        coefs_all = pd.concat(coefs, keys=keys)
+        return(coefs_all, adevs_errs)
 
 
 def analytical(R_initialOrientation=np.eye(3), omega=np.zeros((5, 3)),

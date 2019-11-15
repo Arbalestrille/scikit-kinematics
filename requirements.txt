@@ -1,8 +1,10 @@
+allantools
 docutils
 matplotlib
 numpy
 pandas
 pygame
 sympy
+scikit-learn
 scipy
 PyOpenGL
