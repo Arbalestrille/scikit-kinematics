@@ -46,21 +46,22 @@ def normalize(v):
         \\vec{n} = \\frac{\\vec{v}}{|\\vec{v}|}
 
     """
-
     from numpy.linalg import norm
 
-    if np.array(v).ndim == 1:
+    vv = np.array(v)
+
+    if vv.ndim == 1:
         vectorFlag = True
     else:
         vectorFlag = False
 
-    v = np.double(np.atleast_2d(v))
+    vv = np.double(np.atleast_2d(vv))
     # otherwise I get in trouble 2 lines down, if v is integer!
-    length = norm(v, axis=1)
-    v[length != 0] = (v[length != 0].T/length[length != 0]).T
+    length = norm(vv, axis=1)
+    vv[length != 0] = (vv[length != 0].T / length[length != 0]).T
     if vectorFlag:
-        v = v.ravel()
-    return v
+        vv = vv.ravel()
+    return vv
 
 
 def angle(v1, v2):
@@ -165,16 +166,16 @@ def project(v1, v2, projection_type="1D"):
 
     """
 
-    v1 = np.atleast_2d(v1)
-    v2 = np.atleast_2d(v2)
+    vv1 = np.atleast_2d(v1)
+    vv2 = np.atleast_2d(v2)
 
-    e2 = normalize(v2)
+    e2 = normalize(vv2)
 
     if projection_type == "1D":
         if e2.ndim == 1 or e2.shape[0] == 1:
-            return (e2 * list(map(np.dot, v1, e2))).ravel()
+            return (e2 * list(map(np.dot, vv1, e2))).ravel()
         else:
-            return (e2.T * list(map(np.dot, v1, e2))).T
+            return (e2.T * list(map(np.dot, vv1, e2))).T
     elif projection_type == "2D":
         if e2.shape[0] > 1:
             msg = "2D projections only implemented for fixed projection-plane!"
@@ -189,7 +190,7 @@ def project(v1, v2, projection_type="1D"):
         if z > 0:    # choose a downward-pointing look for the projection
             projection_matrix = projection_matrix * np.r_[-1, 1, -1]
 
-        projected = v1 @ projection_matrix
+        projected = vv1 @ projection_matrix
         projected = projected[:, :2]
         if e2.ndim == 1 or e2.shape[0] == 1:
             return projected.ravel()
@@ -403,8 +404,8 @@ def rotate_vector(vector, q):
            [ 0.        ,  0.        ,  1.        ]])
 
     """
-    vector = np.atleast_2d(vector)
-    qvector = np.hstack((np.zeros((vector.shape[0], 1)), vector))
+    vvector = np.atleast_2d(vector)
+    qvector = np.hstack((np.zeros((vvector.shape[0], 1)), vvector))
     vRotated = quat.q_mult(q, quat.q_mult(qvector, quat.q_inv(q)))
     vRotated = vRotated[:, 1:]
 
