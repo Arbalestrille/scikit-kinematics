@@ -46,7 +46,6 @@ def normalize(v):
         \\vec{n} = \\frac{\\vec{v}}{|\\vec{v}|}
 
     """
-    from numpy.linalg import norm
 
     vv = np.array(v)
 
@@ -57,7 +56,7 @@ def normalize(v):
 
     vv = np.double(np.atleast_2d(vv))
     # otherwise I get in trouble 2 lines down, if v is integer!
-    length = norm(vv, axis=1)
+    length = np.linalg.norm(vv, axis=1)
     vv[length != 0] = (vv[length != 0].T / length[length != 0]).T
     if vectorFlag:
         vv = vv.ravel()
