@@ -1,6 +1,7 @@
 from setuptools import setup
 
-packages = ["skinematics", "skinematics.sensors", "skinematics.simulations"]
+packages = ["skinematics", "skinematics.sensors", "skinematics.simulations",
+            "skinematics.utils"]
 setup(
     name='scikit-kinematics',
     version="0.8.3",
