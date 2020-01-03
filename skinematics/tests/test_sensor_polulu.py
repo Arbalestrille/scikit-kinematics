@@ -1,5 +1,4 @@
-"""
-Test import data saved with Polulu-sensors, through subclassing "IMU_Base"
+"""Test import data saved with Polulu-sensors, through subclassing `IMU_Base`
 
 Author: Thomas Haslwanter
 

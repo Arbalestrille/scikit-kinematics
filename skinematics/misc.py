@@ -1,15 +1,23 @@
-"""
-Miscellaneous user interface utilities for
+"""Miscellaneous user interface utilities
 
     - getting the screen size
     - selecting files or directories.
       If nothing or a non-existing file/directory is selected,
-      the return is "0". Otherwise the file/directory is returned.
+      then return "0". Otherwise the file/directory is returned.
     - Selection from a list.
     - waitbar
     - listbox
 
+.. autosummary::
+
+   get_file
+   get_dir
+   get_screensize
+   progressbar
+   save_file
+
 author: Thomas Haslwanter
+
 """
 
 import os
@@ -113,7 +121,9 @@ def get_file(FilterSpec="*", DialogTitle="Select File: ", DefaultName=""):
 
     Examples
     --------
-    >>> (myFile, myPath) = skinematics.ui.getfile('*.py', 'Testing file-selection', 'c:\\temp\\test.py')
+    >>> (myFile, myPath) = (skinematics.ui
+    ...                     .getfile('*.py', 'Testing file-selection',
+    ...                              'c:\\temp\\test.py'))
 
     """
 
@@ -159,7 +169,9 @@ def save_file(FilterSpec="*", DialogTitle="Save File: ", DefaultName=""):
 
     Examples
     --------
-    >>> (myFile, myPath) = skinematics.ui.savefile('*.py', 'Testing file-selection', 'c:\\temp\\test.py')
+    >>> (myFile, myPath) = (skinematics.ui
+    ...                     .savefile('*.py', 'Testing file-selection',
+    ...                               'c:\\temp\\test.py'))
 
     """
 

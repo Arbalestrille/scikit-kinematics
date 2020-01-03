@@ -1,6 +1,9 @@
-"""Abstract base class `IMU_Base` for analyzing movement recordings with
-inertial measurement units (IMUs), as well as functions and classes for the
-evaluation of IMU-data
+"""Abstract base class `IMU_Base` for inertial measurement units (IMUs)
+
+Analysis of movement recordings with inertial measurement units (IMUs), as
+well as functions and classes for the evaluation of IMU-data.  These
+routines facilitate the calculation of 3d movement kinematics for
+recordings from inertial measurement units (IMUs).
 
 The advantage of using an "abstract base class" is that it allows to write
 code that is independent of the IMU-sensor. All IMUs provide acceleration
@@ -16,6 +19,58 @@ includes a number of activities:
 - Calculating duration, total samples, etc.
 - Calculating orientation (expressed as "quat"), with the method specified
   in "q_type"
+
+The routines are implemented in an object oriented way. (Don't worry if you
+have not used objects before, it won't be a problem here!) All sensor
+implementations are based on the abstract base class "IMU_Base". For each
+sensor, the corresponding method "get_data" has to be implemented, by
+sub-classing IMU_Base. Currently 5 sensor types are supported:
+
+* XSens
+* xio (original, and NGIMU)
+* YEI
+* polulu
+* manual
+
+The last one is not a "real" sensor, but allows the creation of an
+IMU-object with your own IMU-data, without defining a new class.
+To create a sensor object, choose one of the existing sensor classes, as
+demonstrated in the example below. You have to provide at least the
+file-name of the file containing the sensor data. Optionally, you can also
+provide:
+
+* ``R_init`` initial orientation [default = np.eye(3)]
+* ``pos_init`` initial position [default = np.ones(3)]
+* ``q_type`` method to calculate orientation. The options are:
+    - ``analytical`` [default] analytical solution, using only acc and omega
+    - ``kalman`` quaternion Kalman filter, using acc, omega, and mag
+    - ``madgwick`` Madgwick algorithm, using acc, omega, and mag
+    - ``mahony`` Mahony algorithm, using, acc and omega, and mag
+    - ``None`` If you want to only read in the sensor data
+
+Data are read in, and by default the orientation is automatically
+calculated based on the parameter "q_type" and using the function
+``_calc_orientation``.
+
+Base-Class & Methods
+--------------------
+
+.. autosummary::
+
+   IMU_Base
+   IMU_Base.calc_position
+   IMU_Base.get_data
+   IMU_Base.set_qtype
+
+Classes and Functions for Sensor-Integration
+--------------------------------------------
+
+.. autosummary::
+
+   Mahony
+   Madgwick
+   analytical
+   kalman
 
 Author: Thomas Haslwanter
 
@@ -66,7 +121,7 @@ class IMU_Base(metaclass=abc.ABCMeta):
 
     Parameters
     ----------
-    inFile : string
+    inFile : str
         path- and file-name of data file / input source
     inData : dictionary
         The following fields are required:
@@ -211,7 +266,7 @@ class IMU_Base(metaclass=abc.ABCMeta):
 
         Parameters
         ----------
-        type : string
+        type : str
             - "analytical" quaternion integration of angular velocity
             - "kalman" quaternion Kalman filter
             - "madgwick" gradient descent method, efficient
@@ -368,7 +423,6 @@ class IMU_Base(metaclass=abc.ABCMeta):
         Returns
         -------
         DataFrame
-
             Allan deviation and error for each sensor axis.  DataFrame
             index is the averaging time `tau` for each estimate.
 
@@ -460,8 +514,8 @@ def analytical(R_initialOrientation=np.eye(3), omega=np.zeros((5, 3)),
 
     Example
     -------
-
-    >>> q1, pos1 = analytical(R_initialOrientation, omega, initialPosition, acc, rate)
+    >>> q1, pos1 = analytical(R_initialOrientation, omega,
+    ...                       initialPosition, acc, rate)
 
     """
 
@@ -571,7 +625,7 @@ def kalman(rate, acc, omega, mag, D=[0.4, 0.4, 0.4],
     for ii in range(3):
         Phi_k[ii, ii] = np.exp(-tstep / tau[ii])
 
-    H_k = np.eye(7)		# Identity matrix
+    # H_k = np.eye(7)		# Identity matrix
 
     D = np.r_[0.4, 0.4, 0.4]    # [rad^2/sec^2]; from Yun, 2006
 

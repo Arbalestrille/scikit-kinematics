@@ -1,4 +1,8 @@
-"""Useful processing tools and classes
+"""Useful tools and classes for common IMU data processing tasks
+
+.. autosummary::
+
+   allan
 
 """
 

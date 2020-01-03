@@ -8,8 +8,38 @@ A "Quaternion" class is defined, with
 - operator overloading for mult, div, and inv.
 - indexing
 
+Quaternion class
+----------------
+
+.. autosummary::
+
+   Quaternion
+
+Functions for working with quaternions
+--------------------------------------
+
+.. autosummary::
+
+   q_conj
+   q_inv
+   q_mult
+   q_scalar
+   q_vector
+   unit_q
+
+Conversion routines
+-------------------
+
+.. autosummary::
+
+   calc_angvel
+   calc_quat
+   convert
+   deg2quat
+   quat2deg
+   quat2seq
+
 author: Thomas Haslwanter
-date:   Feb-2018
 
 """
 
@@ -70,52 +100,51 @@ class Quaternion():
     Notes
     -----
     .. math::
-        \\vec {q}_{Euler}  = \\left[{\\begin{array}{*{20}{c}}
-        {\\cos \\frac{\\alpha}{2} * \\cos \\frac{\\beta}{2} *
-         \\cos \\frac{\\gamma}{2} - \\sin \\frac{\\alpha}{2}
-         \\cos \\frac{\\beta}{2} \\sin \\frac{\\gamma}{2}} \\\\
-        {\\cos \\frac{\\alpha}{2} * \\sin \\frac{\\beta}{2} *
-         \\cos \\frac{\\gamma}{2} + \\sin \\frac{\\alpha}{2}
-          \\sin \\frac{\\beta}{2} \\sin \\frac{\\gamma}{2}} \\\\
-        {\\cos \\frac{\\alpha}{2} * \\sin \\frac{\\beta}{2} *
-         \\sin \\frac{\\gamma}{2} - \\sin \\frac{\\alpha}{2}
-         \\sin \\frac{\\beta}{2} \\cos \\frac{\\gamma}{2}} \\\\
-        {\\cos \\frac{\\alpha}{2} * \\cos \\frac{\\beta}{2} *
-         \\sin \\frac{\\gamma}{2} + \\sin \\frac{\\alpha}{2}
-         \\cos \\frac{\\beta}{2} \\cos \\frac{\\gamma}{2}}
-         \\end{array}} \\right]
 
-    .. math::
-        \\vec {q}_{Fick}  = \\left[{\\begin{array}{*{20}{c}}
-        {\\cos \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
-         \\cos \\frac{\\theta}{2} + \\sin \\frac{\\psi}{2}
-         \\sin \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
-        {\\sin \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
-         \\cos \\frac{\\theta}{2} - \\cos \\frac{\\psi}{2}
-         \\sin \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
-        {\\cos \\frac{\\psi}{2} * \\sin \\frac{\\phi}{2} *
-         \\cos \\frac{\\theta}{2} + \\sin \\frac{\\psi}{2}
-         \\cos \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
-        {\\cos \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
-         \\sin \\frac{\\theta}{2} - \\sin \\frac{\\psi}{2}
-         \\sin \\frac{\\phi}{2}\\cos \\frac{\\theta}{2}}
-         \\end{array}} \\right]
+       \\vec {q}_{Euler} &= \\left[{\\begin{array}{*{20}{c}}
+       {\\cos \\frac{\\alpha}{2} * \\cos \\frac{\\beta}{2} *
+        \\cos \\frac{\\gamma}{2} - \\sin \\frac{\\alpha}{2}
+        \\cos \\frac{\\beta}{2} \\sin \\frac{\\gamma}{2}} \\\\
+       {\\cos \\frac{\\alpha}{2} * \\sin \\frac{\\beta}{2} *
+        \\cos \\frac{\\gamma}{2} + \\sin \\frac{\\alpha}{2}
+         \\sin \\frac{\\beta}{2} \\sin \\frac{\\gamma}{2}} \\\\
+       {\\cos \\frac{\\alpha}{2} * \\sin \\frac{\\beta}{2} *
+        \\sin \\frac{\\gamma}{2} - \\sin \\frac{\\alpha}{2}
+        \\sin \\frac{\\beta}{2} \\cos \\frac{\\gamma}{2}} \\\\
+       {\\cos \\frac{\\alpha}{2} * \\cos \\frac{\\beta}{2} *
+        \\sin \\frac{\\gamma}{2} + \\sin \\frac{\\alpha}{2}
+        \\cos \\frac{\\beta}{2} \\cos \\frac{\\gamma}{2}}
+        \\end{array}} \\right]
 
-    .. math::
-        \\vec {q}_{Helmholtz}  = \\left[{\\begin{array}{*{20}{c}}
-        {\\cos \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
-         \\cos \\frac{\\theta}{2} - \\sin \\frac{\\psi}{2}
-         \\sin \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
-        {\\sin \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
-         \\cos \\frac{\\theta}{2} + \\cos \\frac{\\psi}{2}
-         \\sin \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
-        {\\cos \\frac{\\psi}{2} * \\sin \\frac{\\phi}{2} *
-         \\cos \\frac{\\theta}{2} + \\sin \\frac{\\psi}{2}
-         \\cos \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
-        {\\cos \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
-         \\sin \\frac{\\theta}{2} - \\sin \\frac{\\psi}{2}
-         \\sin \\frac{\\phi}{2}\\cos \\frac{\\theta}{2}}
-         \\end{array}} \\right]
+       \\vec {q}_{Fick} &= \\left[{\\begin{array}{*{20}{c}}
+       {\\cos \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
+        \\cos \\frac{\\theta}{2} + \\sin \\frac{\\psi}{2}
+        \\sin \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
+       {\\sin \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
+        \\cos \\frac{\\theta}{2} - \\cos \\frac{\\psi}{2}
+        \\sin \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
+       {\\cos \\frac{\\psi}{2} * \\sin \\frac{\\phi}{2} *
+        \\cos \\frac{\\theta}{2} + \\sin \\frac{\\psi}{2}
+        \\cos \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
+       {\\cos \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
+        \\sin \\frac{\\theta}{2} - \\sin \\frac{\\psi}{2}
+        \\sin \\frac{\\phi}{2}\\cos \\frac{\\theta}{2}}
+        \\end{array}} \\right]
+
+       \\vec {q}_{Helmholtz} &= \\left[{\\begin{array}{*{20}{c}}
+       {\\cos \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
+        \\cos \\frac{\\theta}{2} - \\sin \\frac{\\psi}{2}
+        \\sin \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
+       {\\sin \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
+        \\cos \\frac{\\theta}{2} + \\cos \\frac{\\psi}{2}
+        \\sin \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
+       {\\cos \\frac{\\psi}{2} * \\sin \\frac{\\phi}{2} *
+        \\cos \\frac{\\theta}{2} + \\sin \\frac{\\psi}{2}
+        \\cos \\frac{\\phi}{2}\\sin \\frac{\\theta}{2}} \\\\
+       {\\cos \\frac{\\psi}{2} * \\cos \\frac{\\phi}{2} *
+        \\sin \\frac{\\theta}{2} - \\sin \\frac{\\psi}{2}
+        \\sin \\frac{\\phi}{2}\\cos \\frac{\\theta}{2}}
+        \\end{array}} \\right]
 
     Examples
     --------
@@ -326,14 +355,15 @@ def convert(quat, to="rotmat"):
     -----
 
     .. math::
-        {\\bf{R}} = \\left({\\begin{array}{*{20}{c}}
-        {q_0^2 + q_1^2 - q_2^2 - q_3^2} & {2({q_1}{q_2} - {q_0}{q_3})} &
-        {2({q_1}{q_3} + {q_0}{q_2})} \\\\
-        {2({q_1}{q_2} + {q_0}{q_3})} & {q_0^2 - q_1^2 + q_2^2 - q_3^2} &
-        {2({q_2}{q_3} - {q_0}{q_1})} \\\\
-        {2({q_1}{q_3} - {q_0}{q_2})} & {2({q_2}{q_3} + {q_0}{q_1})} &
-        {q_0^2 - q_1^2 - q_2^2 + q_3^2} \\\\
-        \\end{array}} \\right)
+
+       {\\bf{R}} = \\left({\\begin{array}{*{20}{c}}
+       {q_0^2 + q_1^2 - q_2^2 - q_3^2} & {2({q_1}{q_2} - {q_0}{q_3})} &
+       {2({q_1}{q_3} + {q_0}{q_2})} \\\\
+       {2({q_1}{q_2} + {q_0}{q_3})} & {q_0^2 - q_1^2 + q_2^2 - q_3^2} &
+       {2({q_2}{q_3} - {q_0}{q_1})} \\\\
+       {2({q_1}{q_3} - {q_0}{q_2})} & {2({q_2}{q_3} + {q_0}{q_1})} &
+       {q_0^2 - q_1^2 - q_2^2 + q_3^2} \\\\
+       \\end{array}} \\right)
 
     More info under
     http://en.wikipedia.org/wiki/Quaternion
@@ -395,7 +425,8 @@ def deg2quat(inDeg):
     -----
 
     .. math::
-        | \\vec{q} | = sin(\\theta/2)
+
+       |\\vec{q}| = sin(\\theta/2)
 
     More info under
     http://en.wikipedia.org/wiki/Quaternion
@@ -466,7 +497,8 @@ def q_inv(q):
     -----
 
     .. math::
-          q^{-1} = \\frac{q_0 - \\vec{q}}{|q|^2}
+
+       q^{-1} = \\frac{q_0 - \\vec{q}}{|q|^2}
 
     More info under
     http://en.wikipedia.org/wiki/Quaternion
@@ -515,10 +547,11 @@ def q_mult(p, q):
     -----
 
     .. math::
-        q \\circ p = \\sum\\limits_{i=0}^3 {q_i I_i} * \\sum\\limits_{j=0}^3 \\
-        {p_j I_j} = (q_0 p_0 - \\vec{q} \\cdot \\vec{p}) +
+
+       q \\circ p = \\sum\\limits_{i=0}^3 {q_i I_i} * \\sum\\limits_{j=0}^3 \\
+       {p_j I_j}  = (q_0 p_0 - \\vec{q} \\cdot \\vec{p}) +
                     (q_0 \\vec{p} + p_0 \\
-        \\vec{q} + \\vec{q} \\times \\vec{p}) \\cdot \\vec{I}
+                    \\vec{q} + \\vec{q} \\times \\vec{p}) \\cdot \\vec{I}
 
     More info under
     http://en.wikipedia.org/wiki/Quaternion
@@ -582,7 +615,8 @@ def quat2deg(inQuat):
     -----
 
     .. math::
-        | \\vec{q} | = sin(\\theta/2)
+
+       |\\vec{q}| = sin(\\theta/2)
 
     More info under
     http://en.wikipedia.org/wiki/Quaternion
@@ -721,7 +755,8 @@ def q_vector(inQuat):
 
     Examples
     --------
-    >>> quat.q_vector([[np.cos(0.2), 0, 0, np.sin(0.2)],[cos(0.1), 0, np.sin(0.1), 0]])
+    >>> quat.q_vector([[np.cos(0.2), 0, 0, np.sin(0.2)],
+    ...                [cos(0.1), 0, np.sin(0.1), 0]])
     array([[ 0.        ,  0.        ,  0.19866933],
            [ 0.        ,  0.09983342,  0.        ]])
 
@@ -759,7 +794,8 @@ def q_scalar(inQuat):
 
     Examples
     --------
-    >>> quat.q_scalar([[np.cos(0.2), 0, 0, np.sin(0.2)],[np.cos(0.1), 0, np.sin(0.1), 0]])
+    >>> quat.q_scalar([[np.cos(0.2), 0, 0, np.sin(0.2)],
+    ...                [np.cos(0.1), 0, np.sin(0.1), 0]])
     array([ 0.98006658,  0.99500417])
 
     """
@@ -853,12 +889,17 @@ def calc_quat(omega, q0, rate, CStype):
        is given by
 
       .. math::
-          q(t) = \\Delta q(t_n) \\circ \\Delta q(t_{n-1}) \\circ ...
-                 \\circ \\Delta q(t_2) \\circ \\Delta q(t_1) \\circ q(t_0)
+
+         q(t) = \\Delta q(t_n) \\circ \\Delta q(t_{n-1}) \\circ ...
+                \\circ \\Delta q(t_2) \\circ \\Delta q(t_1) \\circ q(t_0)
 
       .. math::
-        \\Delta \\vec{q_i} = \\vec{n(t)} \\sin (\\frac{\\Delta \\phi (t_i)}{2}) =
-        \\frac{\\vec \\omega (t_i)}{\\left| {\\vec \\omega (t_i)} \\right|}\\sin \\left( \\frac{\\left| {\\vec \\omega ({t_i})} \\right|\\Delta t}{2} \\right)
+
+        \\Delta \\vec{q_i} = \\vec{n(t)}
+                             \\sin (\\frac{\\Delta \\phi (t_i)}{2}) =
+        \\frac{\\vec \\omega (t_i)}{\\left| {\\vec \\omega (t_i)} \\right|}
+        \\sin \\left(\\frac{\\left| {\\vec \\omega ({t_i})}
+                            \\right|\\Delta t}{2} \\right)
 
     3) For angular velocity with respect to the body ("bf"), the sequence
        of quaternions is inverted.
@@ -942,8 +983,9 @@ def calc_angvel(q, rate=1, winSize=5, order=2):
     -----
     The angular velocity is given by
 
-      .. math::
-        \\omega = 2 * \\frac{dq}{dt} \\circ q^{-1}
+    .. math::
+
+       \\omega = 2 * \\frac{dq}{dt} \\circ q^{-1}
 
     Examples
     --------

@@ -1,5 +1,5 @@
 """Import data saved with "x-IMU" sensors from x-io, through subclassing
-"IMU_Base" Note that the data are in two files:
+`IMU_Base` Note that the data are in two files:
 
     - a data-file
     - a reg-file
@@ -74,12 +74,13 @@ def read_datafile(in_file):
     Returns
     -------
     out_list: list
-            Contains the following parameters:
+        Contains the following parameters:
 
             - acceleration
             - angular_velocity
             - mag_field_direction
             - packet_nr
+
     """
 
     data = pd.read_csv(in_file)
@@ -101,19 +102,22 @@ class XIO(IMU_Base):
         Get the sampling rate, as well as the recorded data,
         and assign them to the corresponding attributes of "self".
 
-        Assigns the following properties
-            - rate : rate
-            - acc : acceleration
-            - omega : angular_velocity
-            - mag : mag_field_direction
-            - packet_nr : packet_nr
-
         Parameters
         ----------
         in_selection : string
                 Directory containing all the data-files, or
                 filename of one file in that directory
         in_data : not used here
+
+        Notes
+        -----
+        Assigns the following properties:
+
+            - rate : rate
+            - acc : acceleration
+            - omega : angular_velocity
+            - mag : mag_field_direction
+            - packet_nr : packet_nr
 
         """
         in_selection = in_file

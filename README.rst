@@ -5,6 +5,7 @@ scikit-kinematics
 *scikit-kinematics* primarily contains functions for working with 3D
 kinematics, e.g. quaternions and rotation matrices.
 This includes utilities to read in data from the following IMU-sensors:
+
     - polulu
     - XSens
     - xio
@@ -19,24 +20,26 @@ numpy, scipy, matplotlib, pandas, sympy, easygui
 
 Homepage
 --------
+
 http://work.thaslwanter.at/skinematics/html
 
-Author:  Thomas Haslwanter
-Date:    05-08-2019
-Ver:     0.8.2
-Licence: BSD 2-Clause License (http://opensource.org/licenses/BSD-2-Clause)
-        Copyright (c) 2019, Thomas Haslwanter
-        All rights reserved.
+  | Author:  Thomas Haslwanter
+  | Date:    05-08-2019
+  | Ver:     0.8.2
+  | Licence: BSD 2-Clause License (http://opensource.org/licenses/BSD-2-Clause)
+  |          Copyright (c) 2020, Thomas Haslwanter
+  |          All rights reserved.
 
 Installation
 ------------
+
 You can install scikit-kinematics with
 
-    pip install scikit-kinematics
+  pip install scikit-kinematics
 
 and upgrade to a new version with
 
-    pip install --upgrade --no-deps scikit-kinematics
+  pip install --upgrade --no-deps scikit-kinematics
 
 IMUs
 ====
@@ -55,6 +58,7 @@ Read in data, calculate orientation (with one of the algorithms below)
 
 MARG Systems
 ------------
+
 - ``imus.analytical`` Calculate orientation and position, from angular
   velocity and linear acceleration
 - ``imus.kalman`` Calculate orientation from IMU-data using an Extended

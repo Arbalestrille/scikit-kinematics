@@ -1,7 +1,7 @@
-"""
-Test manual data entry, through subclassing "IMU_Base"
+"""Test manual data entry, through subclassing `IMU_Base`
 
 Author: Thomas Haslwanter
+
 """
 
 import unittest

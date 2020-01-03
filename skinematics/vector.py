@@ -3,8 +3,18 @@
 These routines can be used with vectors, as well as with matrices
 containing a vector in each row.
 
+.. autosummary::
+
+   angle
+   GramSchmidt
+   normalize
+   project
+   plane_orientation
+   q_shortest_rotation
+   rotate_vector
+   target2orient
+
 author :  Thomas Haslwanter
-date :    June-2018
 
 """
 
@@ -25,12 +35,8 @@ def normalize(v):
     v_normalized : array (N,) or (M,N)
         normalized input vector
 
-    .. image:: ../docs/Images/vector_normalize.png
-        :scale: 33%
-
     Example
     -------
-
     >>> skinematics.vector.normalize([3, 0, 0])
     array([[ 1.,  0.,  0.]])
 
@@ -41,9 +47,12 @@ def normalize(v):
 
     Notes
     -----
+    .. image:: .static/images/vector_normalize.png
+       :scale: 75%
 
     .. math::
-        \\vec{n} = \\frac{\\vec{v}}{|\\vec{v}|}
+
+       \\vec{n} = \\frac{\\vec{v}}{|\\vec{v}|}
 
     """
 
@@ -78,9 +87,6 @@ def angle(v1, v2):
     angle : double or array(M,)
         angle between v1 and v2
 
-    .. image:: ../docs/Images/vector_angle.png
-        :scale: 33%
-
     Example
     -------
     >>> v1 = np.array([[1,2,3],
@@ -92,10 +98,13 @@ def angle(v1, v2):
 
     Notes
     -----
+    .. image:: .static/images/vector_angle.png
+       :scale: 75%
 
     .. math::
-        \\alpha =arccos(\\frac{\\vec{v_1} \\cdot \\vec{v_2}}{| \\vec{v_1} |
-        \\cdot | \\vec{v_2}|})
+
+       \\alpha =arccos(\\frac{\\vec{v_1} \\cdot \\vec{v_2}}{| \\vec{v_1} |
+       \\cdot | \\vec{v_2}|})
 
     """
 
@@ -135,9 +144,6 @@ def project(v1, v2, projection_type="1D"):
     v_projected : array (N,) or (M,N)
         projection of v1 onto v2
 
-    .. image:: ../docs/Images/vector_project.png
-        :scale: 33%
-
     Example
     -------
     >>> v1 = np.array([[1,2,3],
@@ -150,14 +156,17 @@ def project(v1, v2, projection_type="1D"):
 
     Notes
     -----
+    .. image:: .static/images/vector_project.png
+       :scale: 75%
 
     .. math::
-        \\vec{n} = \\frac{ \\vec{a} }{| \\vec{a} |}
 
-        \\vec{v}_{proj} = \\vec{n} (\\vec{v} \\cdot \\vec{n})
+        \\vec{n} &= \\frac{ \\vec{a} }{| \\vec{a} |}
 
-        \\mathbf{c}^{image} = \\mathbf{R} \\cdot \\mathbf{c}^{space} +
-                              \\mathbf{p}_{CS}
+        \\vec{v}_{proj} &= \\vec{n} (\\vec{v} \\cdot \\vec{n})
+
+        \\mathbf{c}^{image} &= \\mathbf{R} \\cdot \\mathbf{c}^{space} +
+                               \\mathbf{p}_{CS}
 
     *Note* that the orientation of the 2D projection is not uniquely defined.
     It is chosen here such that the y-axis points up, and one is "looking down"
@@ -217,9 +226,6 @@ def GramSchmidt(p0, p1, p2):
     Rmat : array (9,) or (M,9)
         flattened rotation matrix
 
-    .. image:: ../docs/Images/GramSchmidt.jpg
-        :scale: 25%
-
     Example
     -------
     >>> P0 = np.array([[0, 0, 0], [1,2,3]])
@@ -233,11 +239,14 @@ def GramSchmidt(p0, p1, p2):
 
     Notes
     -----
+    .. image:: .static/images/gram_schmidt.png
+       :scale: 75%
 
-    The flattened rotation matrix corresponds to
+    The flattened rotation matrix corresponds to:
 
     .. math::
-        \\mathbf{R} = [ \\vec{e}_1 \\, \\vec{e}_2 \\, \\vec{e}_3 ]
+
+       \\mathbf{R} = [ \\vec{e}_1 \\, \\vec{e}_2 \\, \\vec{e}_3 ]
 
     """
 
@@ -273,10 +282,6 @@ def plane_orientation(p0, p1, p2):
     n : array (3,) or (M,3)
         vector perpendicular to the plane
 
-
-    .. image:: ../docs/Images/vector_plane_orientation.png
-        :scale: 33%
-
     Example
     -------
     >>> P0 = np.array([[0, 0, 0], [1,2,3]])
@@ -288,10 +293,13 @@ def plane_orientation(p0, p1, p2):
 
     Notes
     -----
+    .. image:: .static/images/vector_plane_orientation.png
+       :scale: 75%
 
     .. math::
-        \\vec{n} = \\frac{ \\vec{a} \\times \\vec{b}}
-                   {| \\vec{a} \\times \\vec{b}|}
+
+       \\vec{n} = \\frac{ \\vec{a} \\times \\vec{b}}
+                  {| \\vec{a} \\times \\vec{b}|}
 
     """
 
@@ -324,9 +332,6 @@ def q_shortest_rotation(v1, v2):
     q : ndarray (3,)
         quaternion rotating v1 into v2
 
-    .. image:: ../docs/Images/vector_q_shortest_rotation.png
-        :scale: 33%
-
     Example
     -------
     >>> v1 = np.r_[1,0,0]
@@ -334,6 +339,11 @@ def q_shortest_rotation(v1, v2):
     >>> q = qrotate(v1, v2)
     >>> print(q)
     [ 0.          0.          0.38268343]
+
+    Notes
+    -----
+    .. image:: .static/images/vector_q_shortest_rotation.png
+       :scale: 75%
 
     """
 
@@ -376,14 +386,15 @@ def rotate_vector(vector, q):
     rotated : array, shape (3,) or (N,3)
         rotated vector(s)
 
-    .. image:: ../docs/Images/vector_rotate_vector.png
-        :scale: 33%
-
     Notes
     -----
+    .. image:: .static/images/vector_rotate.png
+       :scale: 75%
+
     .. math::
-        q \\circ \\left( {\\vec x \\cdot \\vec I} \\right) \\circ {q^{ - 1}} =
-        \\left( {{\\bf{R}} \\cdot \\vec x} \\right) \\cdot \\vec I
+
+       q \\circ \\left( {\\vec x \\cdot \\vec I} \\right) \\circ {q^{ - 1}} =
+       \\left( {{\\bf{R}} \\cdot \\vec x} \\right) \\cdot \\vec I
 
     More info under
     http://en.wikipedia.org/wiki/Quaternion

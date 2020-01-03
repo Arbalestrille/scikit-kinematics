@@ -1,5 +1,5 @@
 """Test import from import data saved with XSens-sensors, through
-subclassing "IMU_Base"
+subclassing `IMU_Base`
 
 Author: Thomas Haslwanter
 

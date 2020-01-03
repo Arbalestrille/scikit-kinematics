@@ -1,9 +1,17 @@
-"""Utilities for analyzing movement data recorded with marker-based video
-systems.
+"""Utilities for analysis of data from marker-based video systems
+
+These routines facilitate the calculation of 3d movement kinematics for
+marker-based video recordings.
+
+Optical Systems
+---------------
+
+.. autosummary::
+
+   analyze_3Dmarkers
+   find_trajectory
 
 Author: Thomas Haslwanter
-Version: 1.2
-Date: Aug-2017
 
 """
 import numpy as np
@@ -12,7 +20,9 @@ from skinematics import quat, vector             # noqa: E401
 
 
 def analyze_3Dmarkers(MarkerPos, ReferencePos):
-    """Take recorded positions from 3 markers, and calculate center-of-mass
+    """Kinematic analysis of video-basedrecordings of 3D markers
+
+    Take recorded positions from 3 markers, and calculate center-of-mass
     (COM) and orientation Can be used e.g. for the analysis of Optotrac
     data.
 
@@ -140,7 +150,8 @@ def find_trajectory(r0, Position, Orientation):
     >>> M[1]= np.r_[1,0,0]
     >>> M[2] = np.r_[1,1,0]
     >>> M -= np.mean(M, axis=0)
-    >>> q = np.vstack((np.zeros_like(t), np.zeros_like(t),quat.deg2quat(100*t))).T
+    >>> q = np.vstack((np.zeros_like(t), np.zeros_like(t),
+    ...                quat.deg2quat(100 * t))).T
     >>> M0 = vector.rotate_vector(M[0], q) + translation
     >>> M1 = vector.rotate_vector(M[1], q) + translation
     >>> M2 = vector.rotate_vector(M[2], q) + translation

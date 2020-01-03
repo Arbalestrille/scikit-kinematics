@@ -1,5 +1,4 @@
-"""
-Import data manually, through subclassing "IMU_Base"
+"""Import data manually, through subclassing `IMU_Base`
 
 Author: Thomas Haslwanter
 
@@ -21,12 +20,14 @@ class MyOwnSensor(IMU_Base):
                 Information about the data origin
         in_data : MUST contain rate / acc / omega, mag is optional
 
-        Assigns
-        -------
-        - rate : rate
-        - acc : acceleration
-        - omega : angular_velocity
-        - mag : mag_field_direction
+        Notes
+        -----
+        Assigns the following attributes:
+            - rate : rate
+            - acc : acceleration
+            - omega : angular_velocity
+            - mag : mag_field_direction
+
         """
 
         # Get the sampling rate from the second line in the file

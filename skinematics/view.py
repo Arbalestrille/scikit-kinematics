@@ -1,24 +1,33 @@
-"""This module includes two functions:
+"""Visualization of IMU data
 
-    - An interactive viewer for time-series data ("view.ts")
-    - An animation of 3D orientations, expressed as quaternions
-      ("view.orientation")
+- An interactive viewer for time-series data ("view.ts")
+
+- An animation of 3D orientations, expressed as quaternions
+  ("view.orientation")
 
 For the time-series viewer, variable types that can in principle be plotted
 are:
 
-    * np.ndarray
-    * pd.core.frame.DataFrame
-    * pd.core.series.Series
+* ``np.ndarray``
+* ``pd.core.frame.DataFrame``
+* ``pd.core.series.Series``
 
 Viewer can be used to inspect a single variable, or to select one from the
 current workspace.
 
-Notable aspects:
-    - Based on Tkinter, to ensure that it runs on all Python installations.
-    - Resizable window.
-    - Keyboard-based interaction.
-    - Logging of marked events.
+Notable aspects
+---------------
+
+- Based on Tkinter, to ensure that it runs on all Python installations.
+- Resizable window.
+- Keyboard-based interaction.
+- Logging of marked events.
+
+.. autosummary::
+
+   Orientation_OGL
+   orientation
+   ts
 
 """
 
@@ -283,9 +292,13 @@ class Orientation_OGL:
 
 
 def orientation(quats, out_file=None, title_text=None, deltaT=100):
-    """Calculate orientation of an arrow-patch to visualize a quaternion
+    """Visualization of 3D orientations as animated triangle
 
+    Calculate orientation of an arrow-patch to visualize a quaternion.
     Uses `_update_func` for the display.
+
+    .. figure:: .static/orientation_viewer.png
+       :scale: 25%
 
     Parameters
     ----------
@@ -972,51 +985,63 @@ class VarSelector():
 
 
 def ts(data=None):
-    """Show the given time-series data
+    """Interactive plot of time-series data (1D and 3D)
 
     In addition to the (obvious) GUI-interactions, the following options
     are available: Keyboard interaction:
 
-        * f ... forward (+ 1/2 frame)
-        * n ... next (+ 1 frame)
-        * b ... back ( -1/2 frame)
-        * p ... previous (-1 frame)
-        * z ... zoom (x-frame = 10% of total length)
-        * a ... all (adjust x- and y-limits)
-        * x ... exit
+        * f -> forward (+ 1/2 frame)
+        * n -> next (+ 1 frame)
+        * b -> back ( -1/2 frame)
+        * p -> previous (-1 frame)
+        * z -> zoom (x-frame = 10% of total length)
+        * a -> all (adjust x- and y-limits)
+        * x -> exit
 
-    Optimized y-scale:
-        Often one wants to see data symmetrically about the zero-axis. To
-        facilitate this display, adjusting the "Upper Limit" automatically
-        sets the lower limit to the corresponding negative value.
+    .. figure:: .static/viewer_ts3.png
+       :scale: 50%
 
-    Logging:
-        When "Log" is activated, right-mouse clicks are indicated with
-        vertical bars, and the corresponding x-values are stored into the
-        users home-directory, in the file "[varName].log". Since the name
-        of the first value is unknown the first events are stored into
-        "data.log".
+       Improved viewability of 3D data.
 
-    Load:
-        Pushing the "Load"-button shows you all the plottable variables in
-        your namespace.  Plottable variables are:
+    .. figure:: .static/viewer_large.png
+       :scale: 50%
+
+       Interactively analyze time-series data
+
+    Notes
+    -----
+
+    Often one wants to see data symmetrically about the zero-axis. To
+    acilitate this display, adjusting the "Upper Limit" automatically sets
+    the lower limit to the corresponding negative value.
+
+    When "Log" is activated, right-mouse clicks are indicated with vertical
+    bars, and the corresponding x-values are stored into the users
+    home-directory, in the file "[varName].log". Since the name of the
+    first value is unknown the first events are stored into "data.log".
+
+    Pushing the "Load"-button shows you all the plottable variables in your
+    namespace.  Plottable variables are:
+
         * ndarrays
         * Pandas DataFrames
         * Pandas Series
 
-    Examples:
-        To view a single plottable variable:
+    Examples
+    --------
+    To view a single plottable variable:
+
     >>> x = np.random.randn(100,3)
     >>> view.ts(x)
 
-        To select a plottable variable from the workspace
+    To select a plottable variable from the workspace:
+
     >>> x = np.random.randn(100,3)
     >>> t = np.arange(0,10,0.1)
     >>> y = np.sin(x)
     >>> view.ts(locals)
 
     """
-
     root = tk.Tk()
     Display(root, data)
     root.mainloop()

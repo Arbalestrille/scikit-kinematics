@@ -1,5 +1,5 @@
 """Import data saved with "NGIMU" sensors from x-io, through subclassing
-"IMU_Base" Note that the data are in two files:
+`IMU_Base` Note that the data are in two files:
 
     - a data-file
     - a reg-file
@@ -78,13 +78,14 @@ def read_datafile(in_file):
     Returns
     -------
     out_list: list
-            Contains the following parameters:
+        Contains the following parameters:
 
             - time [s]
             - acceleration [g]
             - angular_velocity [deg/s]
             - mag_field_direction [uT]
             - barometer [hPa]
+
     """
 
     data = pd.read_csv(in_file)
@@ -110,12 +111,6 @@ class NGIMU(IMU_Base):
         - "Settings.txt" : contains all the sensor-settings
         - "sensors.csv" : contains the recorded sensor data
 
-        Assigns the following properties:
-            - rate : rate
-            - acc : acceleration
-            - omega : angular_velocity
-            - mag : mag_field_direction
-
         Parameters
         ----------
         in_selection : string
@@ -123,6 +118,13 @@ class NGIMU(IMU_Base):
                 filename of one file in that directory
         in_data : not used here
 
+        Notes
+        -----
+        Assigns the following properties:
+            - rate : rate
+            - acc : acceleration
+            - omega : angular_velocity
+            - mag : mag_field_direction
 
         """
 

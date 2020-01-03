@@ -6,7 +6,20 @@ animals is estimating the orientation of the instrument on the animal.  The
 air-breathing marine/aquatic animals that regularly come up to the surface
 to breathe.  See Johnson (2011) for details on the approach.
 
+Notes
+-----
+
 A right-handed coordinate system is assumed in the input `IMU` data.
+
+.. image:: .static/images/rhs_frame.png
+   :scale: 40%
+
+The :class:`IMU2Animal` class provides an integrated approach to estimating
+the relative orientation of two reference frames: a) body (b) and b) sensor
+(s).
+
+.. image:: .static/images/imu2animal_frames.png
+   :scale: 40%
 
 .. autosummary::
 
@@ -777,6 +790,20 @@ class IMU2Animal:
         Use the rotations for each surface period segment to re-orient the
         `IMU` object to the animal frame.  Alternatively, apply the
         supplied rotation to the entire `IMU` object.
+
+        An overview of the re-orientation process is illustrated below.
+
+        .. image:: .static/images/time_series_rotation.png
+           :width: 100%
+
+        Each surface segment :math:`s_i`, delineated by beginning and
+        ending times :math:`t_{0}^{s_i}` and :math:`t_{1}^{s_i}`
+        (:math:`i=1` to :math:`i=n`), respectively, allows for an estimate
+        of the `IMU` device orientation on the animal.  The corresponding
+        rotation :math:`R_{s_{i}}` for transforming data from the `IMU`
+        frame to the animal frame is applied to the data segments in the
+        second line above, from the beginning of the deployment at
+        :math:`t_0` to the end at :math:`t_k`.
 
         Parameters
         ----------

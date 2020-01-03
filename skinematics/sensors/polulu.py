@@ -1,7 +1,7 @@
-"""
-Import data saved with polulu-sensors, through subclassing "IMU_Base"
+"""Import data saved with polulu-sensors, through subclassing `IMU_Base`
 
 https://www.pololu.com/product/2738
+
 These are low-cost IMUS (<20 US$), where acceleration/gyroscope data are not
 sampled at the same time as the magnetic field data (just over 100 Hz).
 As a result, the interpolated sampling rate has to be set by hand.
@@ -29,12 +29,14 @@ class Polulu(IMU_Base):
         in_data : float
                 Sampling rate (has to be provided!!)
 
-        Assigns
-        -------
-        - rate : rate
-        - acc : acceleration
-        - omega : angular_velocity
-        - mag : mag_field_direction
+        Notes
+        -----
+        Assigns the following attributes:
+            - rate : rate
+            - acc : acceleration
+            - omega : angular_velocity
+            - mag : mag_field_direction
+
         """
 
         try:

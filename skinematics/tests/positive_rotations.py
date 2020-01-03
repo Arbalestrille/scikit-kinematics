@@ -1,9 +1,6 @@
-"""
-This file can be used to test quaterion viewers.
+"""This file can be used to test quaterion viewers.
 
 author: thomas haslwanter
-date:   Jan-2018
-ver:    0.1
 
 """
 import numpy as np

@@ -1,17 +1,15 @@
-""""Functions for working with 3D kinematics (i.e. quaternions and rotation
-matrices)
+""""Functions for working with 3D kinematics
+
+Functions and classes useful for working with quaternions and rotation
+matrices.
 
 Compatible Python 3.
-
-Dependencies
-------------
-numpy, scipy, matplotlib, pandas, sympy, pygame, pyOpenGL
 
 Homepage
 --------
 http://work.thaslwanter.at/skinematics/html/
 
-Copyright (c) 2019 Thomas Haslwanter <thomas.haslwanter@fh-ooe.at>
+Copyright (c) 2020 Thomas Haslwanter <thomas.haslwanter@fh-ooe.at>
 
 """
 

@@ -1,8 +1,6 @@
-"""Test import data saved with YEI-sensors, through subclassing "IMU_Base"
+"""Test import data saved with YEI-sensors, through subclassing `IMU_Base`
 
 Author: Thomas Haslwanter
-Version: 0.1
-Date: Sept-2017
 
 """
 

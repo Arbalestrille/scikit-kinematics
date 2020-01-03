@@ -1,8 +1,7 @@
 """Test import from import data saved with NGIMU sensors from x-io,
-through subclassing "IMU_Base"
+through subclassing `IMU_Base`
 
 Author: Thomas Haslwanter
-Date: Feb-2018
 
 """
 

@@ -1,8 +1,6 @@
-"""
-Import data saved with yei-sensors, through subclassing "IMU_Base"
+"""Import data saved with yei-sensors, through subclassing `IMU_Base`
 
 Author: Thomas Haslwanter
-Date: Sept-2017
 
 """
 
@@ -24,12 +22,15 @@ class YEI(IMU_Base):
                 Filename of the data-file
         in_data : not used here
 
-        Assigns
-        -------
-        - rate : rate
-        - acc : acceleration
-        - omega : angular_velocity
-        - mag : mag_field_direction
+        Notes
+        -----
+        Assigns the following attributes:
+
+            - rate : rate
+            - acc : acceleration
+            - omega : angular_velocity
+            - mag : mag_field_direction
+
         """
 
         data = pd.read_csv(in_file)

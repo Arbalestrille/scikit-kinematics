@@ -1,9 +1,50 @@
-"""
-Routines for working with rotation matrices
+"""Routines for working with rotation matrices
 
-comment
+Definition of rotation matrices
+-------------------------------
+
+.. autosummary::
+
+   R
+
+Conversion Routines
+-------------------
+
+.. autosummary::
+
+   convert
+   sequence
+   seq2quat
+
+Symbolic matrices
+-----------------
+
+.. autosummary::
+
+   R_s
+
+For example, you can e.g. generate a Fick-matrix, with::
+
+    R_Fick = R_s(2, 'theta') * R_s(1, 'phi') * R_s(0, 'psi')
+
+Spatial Transformation Matrices
+-------------------------------
+
+.. autosummary::
+
+   stm
+   stm_s
+
+Denavit-Hartenberg Transformations
+----------------------------------
+
+.. autosummary::
+
+   dh
+   dh_s
+
 author :  Thomas Haslwanter
-date :    April-2018
+
 """
 
 import numpy as np
@@ -270,33 +311,34 @@ def sequence(R, to="Euler"):
     Euler:
 
     .. math::
-        \\beta   = -arcsin(\\sqrt{ R_{xz}^2 + R_{yz}^2 }) * sign(R_{yz})
 
-        \\gamma = arcsin(\\frac{R_{xz}}{sin\\beta})
+       \\beta  &= -arcsin(\\sqrt{ R_{xz}^2 + R_{yz}^2 }) * sign(R_{yz})
 
-        \\alpha   = arcsin(\\frac{R_{zx}}{sin\\beta})
+       \\gamma &= arcsin(\\frac{R_{xz}}{sin\\beta})
+
+       \\alpha &= arcsin(\\frac{R_{zx}}{sin\\beta})
 
     nautical / Fick:
 
     .. math::
 
-        \\theta   = arctan(\\frac{R_{yx}}{R_{xx}})
+       \\theta &= arctan(\\frac{R_{yx}}{R_{xx}})
 
-       \\phi = arcsin(R_{zx})
+       \\phi   &= arcsin(R_{zx})
 
-        \\psi   = arctan(\\frac{R_{zy}}{R_{zz}})
+       \\psi   &= arctan(\\frac{R_{zy}}{R_{zz}})
 
     Note that it is assumed that psi < pi !
 
     Helmholtz:
 
     .. math::
-        \\theta = arcsin(R_{yx})
 
-        \\phi = -arcsin(\\frac{R_{zx}}{cos\\theta})
+       \\theta &= arcsin(R_{yx})
 
-        \\psi = -arcsin(\\frac{R_{yz}}{cos\\theta})
+       \\phi   &= -arcsin(\\frac{R_{zx}}{cos\\theta})
 
+       \\psi   &= -arcsin(\\frac{R_{yz}}{cos\\theta})
 
     Note that it is assumed that psi < pi
 
@@ -354,27 +396,29 @@ def dh(theta=0, d=0, r=0, alpha=0):
     Denavit Hartenberg transformation and rotation matrix.
 
     .. math::
-        T_n^{n - 1} = {Trans}_{z_{n - 1}}(d_n)
-                      \\cdot {Rot}_{z_{n - 1}}(\\theta_n)
-                      \\cdot {Trans}_{x_n}(r_n) \\cdot {Rot}_{x_n}(\\alpha_n)
+
+       T_n^{n - 1} = {Trans}_{z_{n - 1}}(d_n)
+                     \\cdot {Rot}_{z_{n - 1}}(\\theta_n)
+                     \\cdot {Trans}_{x_n}(r_n) \\cdot {Rot}_{x_n}(\\alpha_n)
 
     .. math::
-        T_n = \\left[\\begin{array}{ccc|c}
-              \\cos\\theta_n & -\\sin\\theta_n \\cos\\alpha_n &
-              \\sin\\theta_n \\sin\\alpha_n & r_n\\cos\\theta_n \\\\
-              \\sin\\theta_n & \\cos\\theta_n \\cos\\alpha_n &
-              -\\cos\\theta_n \\sin\\alpha_n & r_n \\sin\\theta_n \\\\
-              0 & \\sin\\alpha_n & \\cos\\alpha_n & d_n \\\\
-              \\hline
-              0 & 0 & 0 & 1
-              \\end{array}
-              \\right] =\\left[\\begin{array}{ccc|c}
-              & & & \\\\
-              & R & & T \\\\
-              & & & \\\\
-              \\hline
-              0 & 0 & 0 & 1
-              \\end{array}\\right]
+
+       T_n = \\left[\\begin{array}{ccc|c}
+             \\cos\\theta_n & -\\sin\\theta_n \\cos\\alpha_n &
+             \\sin\\theta_n \\sin\\alpha_n & r_n\\cos\\theta_n \\\\
+             \\sin\\theta_n & \\cos\\theta_n \\cos\\alpha_n &
+             -\\cos\\theta_n \\sin\\alpha_n & r_n \\sin\\theta_n \\\\
+             0 & \\sin\\alpha_n & \\cos\\alpha_n & d_n \\\\
+             \\hline
+             0 & 0 & 0 & 1
+             \\end{array}
+             \\right] =\\left[\\begin{array}{ccc|c}
+             & & & \\\\
+             & R & & T \\\\
+             & & & \\\\
+             \\hline
+             0 & 0 & 0 & 1
+             \\end{array}\\right]
 
     Examples
     --------
@@ -382,7 +426,8 @@ def dh(theta=0, d=0, r=0, alpha=0):
     >>> theta_1=90.0
     >>> theta_2=90.0
     >>> theta_3=0.
-    >>> dh(theta_1,60,0,0)*dh(0,88,71,90)*dh(theta_2,15,0,0)*dh(0,0,174,-180)*dh(theta_3,15,0,0)
+    >>> (dh(theta_1, 60, 0, 0) * dh(0, 88, 71, 90) * dh(theta_2, 15, 0, 0) *
+    ...  dh(0, 0, 174, -180) * dh(theta_3, 15, 0, 0))
     [[-6.12323400e-17 -6.12323400e-17 -1.00000000e+00 -7.10542736e-15],
     [ 6.12323400e-17  1.00000000e+00 -6.12323400e-17  7.10000000e+01],
     [  1.00000000e+00 -6.12323400e-17 -6.12323400e-17  3.22000000e+02],
@@ -423,7 +468,9 @@ def dh(theta=0, d=0, r=0, alpha=0):
 def dh_s(theta=0, d=0, r=0, alpha=0):
     """Symbolic Denavit Hartenberg transformation and rotation matrix
 
-    >>> dh_s("theta_1",60,0,0)*dh_s(0,88,71,90)*dh_s("theta_2",15,0,0)*dh_s(0,0,174,-180)*dh_s("theta_3",15,0,0)
+    >>> (dh_s("theta_1", 60, 0, 0) * dh_s(0, 88, 71, 90) *
+    ...  dh_s("theta_2", 15, 0, 0) * dh_s(0, 0, 174, -180) *
+    ...  dh_s("theta_3", 15, 0, 0))
 
     Parameters
     ----------
@@ -480,15 +527,16 @@ def convert(rMat, to="quat"):
     -----
 
     .. math::
-         \\vec q = 0.5*copysign\\left( {\\begin{array}{*{20}{c}}
-        {\\sqrt {1 + {R_{xx}} - {R_{yy}} - {R_{zz}}} ,}\\\\
-        {\\sqrt {1 - {R_{xx}} + {R_{yy}} - {R_{zz}}} ,}\\\\
-        {\\sqrt {1 - {R_{xx}} - {R_{yy}} + {R_{zz}}} ,}
-        \\end{array}\\begin{array}{*{20}{c}}
-        {{R_{zy}} - {R_{yz}}}\\\\
-        {{R_{xz}} - {R_{zx}}}\\\\
-        {{R_{yx}} - {R_{xy}}}
-        \\end{array}} \\right)
+
+       \\vec q = 0.5 * copysign \\left({\\begin{array}{*{20}{c}}
+                 {\\sqrt {1 + {R_{xx}} - {R_{yy}} - {R_{zz}}} ,}\\\\
+                 {\\sqrt {1 - {R_{xx}} + {R_{yy}} - {R_{zz}}} ,}\\\\
+                 {\\sqrt {1 - {R_{xx}} - {R_{yy}} + {R_{zz}}} ,}
+                 \\end{array}\\begin{array}{*{20}{c}}
+                 {{R_{zy}} - {R_{yz}}}\\\\
+                 {{R_{xz}} - {R_{zx}}}\\\\
+                 {{R_{yx}} - {R_{xy}}}
+                 \\end{array}} \\right)
 
     More info under
     http://en.wikipedia.org/wiki/Quaternion

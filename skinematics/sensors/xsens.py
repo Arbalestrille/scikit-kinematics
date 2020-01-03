@@ -1,5 +1,4 @@
-"""
-Import data saved with XSens-sensors, through subclassing "IMU_Base"
+"""Import data saved with XSens-sensors, through subclassing `IMU_Base`
 
 Author: Thomas Haslwanter
 
@@ -23,12 +22,15 @@ class XSens(IMU_Base):
                 Filename of the data-file
         in_data : not used here
 
-        Assigns
-        -------
-        - rate : rate
-        - acc : acceleration
-        - omega : angular_velocity
-        - mag : mag_field_direction
+        Notes
+        -----
+        Assigns the following attributes:
+
+            - rate : rate
+            - acc : acceleration
+            - omega : angular_velocity
+            - mag : mag_field_direction
+
         """
 
         # Get the sampling rate from the second line in the file
