@@ -19,7 +19,7 @@ class TestSequenceFunctions(unittest.TestCase):
         in_file = os.path.join(myPath, "data", "data_polulu.txt")
         sensor = Polulu(in_file=in_file, in_data=in_data, q_type=None)
         rate = sensor.rate
-        acc = sensor.acc
+        # acc = sensor.acc
         omega = sensor.omega
 
         self.assertAlmostEqual((rate - 125), 0)

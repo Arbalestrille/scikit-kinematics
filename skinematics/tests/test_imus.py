@@ -79,7 +79,7 @@ class TestSequenceFunctions(unittest.TestCase):
         # and then check, if the quat_vector = [0, sin(45), 0]
         result = quat.q_vector(q_kalman[-1])            # [0.76, 0, 0]
         correct = array([0, np.sin(np.deg2rad(45)), 0])  # [0, 0.71, 0]
-        error = np.linalg.norm(result-correct)
+        error = np.linalg.norm(result - correct)
         # It is not clear why the Kalman filter is not more accurate
         self.assertAlmostEqual(error, 0, places=2)
 
@@ -93,7 +93,6 @@ class TestSequenceFunctions(unittest.TestCase):
         sensor = XSens(in_file=inFile, R_init=R_initialOrientation,
                        pos_init=initialPosition, q_type='kalman')
         print(sensor.source)
-        q = sensor.quat
 
     def test_madgwick(self):
         # Get data

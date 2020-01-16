@@ -21,7 +21,7 @@ class TestSequenceFunctions(unittest.TestCase):
         sensor = XIO(in_file=in_file, q_type=None)
 
         rate = sensor.rate
-        acc = sensor.acc
+        # acc = sensor.acc
         omega = sensor.omega
 
         self.assertAlmostEqual((rate - 256), 0)
