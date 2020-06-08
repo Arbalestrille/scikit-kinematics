@@ -47,7 +47,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
-    'jupyter_sphinx.execute'
+    'jupyter_sphinx'
 ]
 
 numpydoc_show_class_members = False

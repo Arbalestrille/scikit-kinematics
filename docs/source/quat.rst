@@ -5,3 +5,4 @@ Quaternions
 
 .. automodule:: quat
    :members:
+   :noindex:
