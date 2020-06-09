@@ -1,6 +1,8 @@
-=================
-scikit-kinematics
-=================
+.. raw:: html
+
+   <img alt="scikit-kinematics" src="docs/source/.static/skinematics.png"
+    width=10% align=left>
+   <h1>scikit-kinematics</h1>
 
 *scikit-kinematics* primarily contains functions for working with 3D
 kinematics, e.g. quaternions and rotation matrices.
@@ -176,3 +178,9 @@ Interactive Data Analysis
 - ``viewer.ts`` interactive viewer for time series data.
 - ``view.orientation`` visualize and animate orientations, expressed as
   quaternions.
+
+Errata
+------
+
+The file `Errata.pdf <Errata.pdf>`_ contains the list of mistakes in the
+manuscript, and the corresonding corrections.

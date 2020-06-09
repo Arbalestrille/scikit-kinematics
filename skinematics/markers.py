@@ -20,7 +20,7 @@ from skinematics import quat, vector             # noqa: E401
 
 
 def analyze_3Dmarkers(MarkerPos, ReferencePos):
-    """Kinematic analysis of video-basedrecordings of 3D markers
+    """Kinematic analysis of video-based recordings of 3D markers
 
     Take recorded positions from 3 markers, and calculate center-of-mass
     (COM) and orientation Can be used e.g. for the analysis of Optotrac
@@ -112,7 +112,7 @@ def analyze_3Dmarkers(MarkerPos, ReferencePos):
 
 
 def find_trajectory(r0, Position, Orientation):
-    """Movement trajetory of a point on an object
+    """Movement trajectory of a point on an object
 
     Movement from the position and orientation of a sensor, and the
     relative position of the point at t=0.
