@@ -23,6 +23,7 @@ setup(
                       "scikit-learn>=0.20.0", "scipy>=0.18", "sympy>=1.0"],
     test_suite="skinematics.tests",
     extras_require={
+        "dev": ["ipython", "jupyter", "jupyter-sphinx"],
         "docs": ["jupyter-sphinx"]
       },
     # metadata for upload to PyPI

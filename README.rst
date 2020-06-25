@@ -43,6 +43,11 @@ and upgrade to a new version with
 
   pip install --upgrade --no-deps scikit-kinematics
 
+For developers, it is recommended to create a dedicated virtualenv and
+install as
+
+  pip install -e .[dev]
+
 IMUs
 ====
 
