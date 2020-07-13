@@ -476,6 +476,13 @@ class IMU2Animal:
         else:
             self.accel_sg = acc
 
+    def __str__(self):
+        imu_summary = self.imu.describe()
+        srfc_dur_summary = self.describe_surfacing_durations()
+        msg = ("IMU summary:\n{0}\n"
+               "Surface segment duration summary:\n{1}")
+        return(msg.format(imu_summary, srfc_dur_summary))
+
     def describe_surfacing_durations(self):
         """Return a summary of surfacing durations
 
@@ -488,13 +495,6 @@ class IMU2Animal:
         srfc_dur = (self.surface_details["end.surface"] -
                     self.surface_details["beg.surface"])
         return(srfc_dur.describe())
-
-    def __repr__(self):
-        imu_summary = self.imu.describe()
-        srfc_dur_summary = self.describe_surfacing_durations()
-        msg = ("IMU summary:\n{0}\n"
-               "Surface segment duration summary:\n{1}")
-        return(msg.format(imu_summary, srfc_dur_summary))
 
     def _get_surface_mask(self, surface_idx):
         """Return mask for given index in surface details table
